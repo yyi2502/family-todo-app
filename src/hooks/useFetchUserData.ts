@@ -1,30 +1,40 @@
-import { useEffect } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { createClient } from "@/utils/supabase/client";
 
-export const useFetchUserData = () => {
-  const { fetchParentData, fetchChildrenData, clearUser } = useUserStore();
+const useFetchUserData = () => {
+  const { fetchParentData, fetchChildrenData, parentData } = useUserStore();
+  const [loading, setLoading] = useState(true); // データ取得中の状態を管理
 
   useEffect(() => {
-    const supabase = createClient();
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "SIGNED_IN" && session?.user) {
-          console.log("✅ ログイン検知 → ユーザーデータ取得");
-          const parent = fetchParentData(session.user.id);
-          if (parent) {
-            console.log("👨‍👩‍👧‍👦 親データ取得完了 → 子供データ取得開始");
-            fetchChildrenData();
-          }
-        } else if (event === "SIGNED_OUT") {
-          console.log("🚪 ログアウト検知 → ユーザーデータクリア");
-          clearUser();
-        }
-      }
-    );
+    const fetchUserData = async () => {
+      try {
+        const supabase = createClient();
+        const { data: userData, error: userError } =
+          await supabase.auth.getUser();
 
-    return () => {
-      authListener?.subscription.unsubscribe();
+        if (userError) {
+          console.error("ユーザー情報の取得に失敗:", userError);
+          return;
+        }
+
+        if (userData?.user) {
+          fetchParentData(userData.user.id);
+          console.log("親データ取得完了 → 子供データ取得開始");
+          fetchChildrenData();
+          setLoading(false); // データ取得が完了したらloadingをfalseに
+        }
+      } catch (error) {
+        console.error("データ取得エラー:", error);
+      }
     };
-  }, [fetchParentData, fetchChildrenData, clearUser]);
+
+    fetchUserData();
+  }, []);
+
+  return { loading }; // loading状態を返す
 };
+
+export default useFetchUserData;

@@ -1,6 +1,5 @@
 import Dock from "@/components/ui/dock/Dock";
 import Header from "@/components/ui/header/Header";
-import AuthProvider from "@/providers/AuthProvider";
 
 export default function MainLayout({
   children,

@@ -1,44 +1,16 @@
 "use client";
+
 import { useUserStore } from "@/stores/userStore";
-import { createClient } from "@/utils/supabase/client";
-import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Star } from "lucide-react";
+import useFetchUserData from "@/hooks/useFetchUserData";
 
 export default function Home() {
   const router = useRouter();
+  const { parentData, childList, selectedUser, setSelectedUser } =
+    useUserStore();
 
-  const parentData = useUserStore((state) => state.parentData);
-  const childList = useUserStore((state) => state.childList);
-  const selectedUser = useUserStore((state) => state.selectedUser);
-  const setSelectedUser = useUserStore((state) => state.setSelectedUser);
-
-  const { fetchParentData, fetchChildrenData } = useUserStore();
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const supabase = createClient();
-        const { data: userData, error: userError } =
-          await supabase.auth.getUser();
-
-        if (userError) {
-          console.error("ユーザー情報の取得に失敗:", userError);
-          return;
-        }
-
-        if (userData?.user) {
-          fetchParentData(userData.user.id);
-          console.log("親データ取得完了 → 子供データ取得開始");
-          fetchChildrenData();
-        }
-      } catch (error) {
-        console.error("データ取得エラー:", error);
-      }
-    };
-
-    fetchUserData();
-  }, [fetchParentData, fetchChildrenData]);
+  const { loading } = useFetchUserData();
 
   // 利用者 親ユーザー選択
   const handleParentClick = () => {
@@ -56,6 +28,11 @@ export default function Home() {
     setSelectedUser(childId);
     router.push(`/main/child/${childId}`);
   };
+
+  // ローディング中は何も表示しない
+  if (loading) {
+    return null; // loading.tsx によってローディング表示されるので、ここでは何も表示しない
+  }
 
   return (
     <div className="flex flex-col items-center">

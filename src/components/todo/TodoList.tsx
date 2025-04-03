@@ -64,10 +64,7 @@ export default function TodoList({
   };
   // total_point の更新
   const updateTotalPoints = async (todoPoints: number) => {
-    console.log("-----updateTotalPoints");
-    console.log(todoPoints);
     try {
-      console.log(child_id);
       const response = await fetch(`/api/user/${child_id}`, {
         method: "PUT",
         headers: {
@@ -109,8 +106,6 @@ export default function TodoList({
     }
   };
 
-  console.log("child_idchild_id" + child_id);
-  console.log(selectedUser?.id);
   return (
     <div className="list bg-base-100 rounded-box shadow-md">
       {error && <p className="text-red-500">{error}</p>}
