@@ -8,10 +8,12 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <Header />
-      <main className="mt-10 mb-40 max-w-2xl mx-auto p-2">{children}</main>
-      <Dock />
-    </AuthProvider>
+    <>
+      <AuthProvider>
+        <Header />
+        <main className="mt-10 mb-40 max-w-2xl mx-auto p-2">{children}</main>
+        <Dock />
+      </AuthProvider>
+    </>
   );
 }

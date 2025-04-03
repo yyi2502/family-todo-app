@@ -44,7 +44,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-        <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full place-items-center">
+        {/* <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full place-items-center">
           {childList.map((child) => (
             <div key={child.id} className="indicator">
               {selectedUser?.id === child.id && (
@@ -60,7 +60,7 @@ export default function Home() {
               </button>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </>
   );
