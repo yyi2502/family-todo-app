@@ -48,20 +48,25 @@ export const useUserStore = create<UserState>()(
       },
 
       fetchParentData: async (userId) => {
-        console.log("親データ取得fetchParentData:", userId);
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from("users")
-          .select("*")
-          .eq("user_id", userId)
-          .single();
+        try {
+          console.log("親データ取得fetchParentData:", userId);
+          const supabase = createClient();
+          const { data, error } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", userId)
+            .eq("role", "parent");
 
-        if (!error) {
-          console.error("fetchParentData エラー:", error);
-          return null;
+          if (error) {
+            console.error("fetchParentData エラー:", error);
+            return null;
+          }
+          set({ parentData: data?.[0] || null });
+          console.log(data);
+          return data;
+        } catch (err) {
+          console.error("子ユーザーのデータ取得エラー:", err);
         }
-        set({ parentData: data });
-        return data; // ここで `return` するのがポイント！
       },
 
       fetchChildrenData: async () => {
@@ -71,8 +76,8 @@ export const useUserStore = create<UserState>()(
             throw new Error(`子ユーザーのデータ取得失敗: ${res.status}`);
           }
           const data = await res.json();
-          set({ childList: data });
-          console.log("fetch children 完了", data);
+          set({ childList: data.children });
+          console.log("fetch children 完了", data.children);
         } catch (err) {
           console.error("子ユーザーのデータ取得エラー:", err);
         }

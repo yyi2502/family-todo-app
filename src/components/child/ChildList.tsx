@@ -10,7 +10,6 @@ export default function ChildList() {
   // const childList = useUserStore((state) => state.childList);
   const childList = useUserStore((state) => state.childList || []);
   const selectedUser = useUserStore((state) => state.selectedUser);
-  console.log(childList);
   return (
     <>
       <ul>
