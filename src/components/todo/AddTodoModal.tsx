@@ -8,17 +8,18 @@ import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import { Plus } from "lucide-react";
+import { useTodoActions } from "@/hooks/useTodoActions";
+import { useTodoStore } from "@/stores/todoStore";
 
 type FormData = z.infer<typeof AddTodoSchema>;
 interface AddTodoFormProps {
   refetchTodos: () => void; // 親コンポーネントからリスト更新関数を受け取る
 }
 
-export default function AddTodoForm({ refetchTodos }: AddTodoFormProps) {
-  const router = useRouter();
+export default function AddTodoModal({ refetchTodos }: AddTodoFormProps) {
+  const { addTodo } = useTodoActions();
   const parentData = useUserStore((state) => state.parentData);
-  const childList = useUserStore((state) => state.childList);
-  const fetchChildList = useUserStore((state) => state.fetchChildList);
+  const setShouldRefetch = useTodoStore((state) => state.setShouldRefetch);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -50,36 +51,10 @@ export default function AddTodoForm({ refetchTodos }: AddTodoFormProps) {
   const onSubmit = async (data: FormData) => {
     setError("");
     setMessage("");
-
-    startTransition(async () => {
-      try {
-        const res = await fetch("/api/todo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...data,
-            parent_id: parentData?.id,
-          }),
-        });
-
-        const resData = await res.json();
-
-        if (!res.ok) {
-          setError(
-            resData.error || "登録に失敗しました。入力内容を確認してください。"
-          );
-          return;
-        }
-
-        refetchTodos(); // リスト更新関数を呼び出す
-        modalRef.current?.close(); // モーダルを閉じる
-        reset(); // フォームをクリア
-      } catch (err) {
-        console.error("ネットワークエラーまたは予期しないエラー:", err);
-        setError(
-          "サーバーへの接続に失敗しました。しばらくしてから再度お試しください"
-        );
-      }
+    addTodo({ ...data, created_by: parentData?.id || "" }, () => {
+      modalRef.current?.close();
+      reset();
+      setShouldRefetch(true);
     });
   };
 
@@ -159,7 +134,6 @@ export default function AddTodoForm({ refetchTodos }: AddTodoFormProps) {
                 <input
                   type="checkbox"
                   {...register("is_recommended")}
-                  defaultChecked
                   className="checkbox bg-white"
                 />
                 おすすめに表示する

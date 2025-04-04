@@ -7,7 +7,8 @@ import { Delete, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { NameDisplay } from "../user/NameDisplay";
-import { fetchAllTodos } from "@/utils/todo/todoApi";
+import { useTodoActions } from "@/hooks/useTodoActions";
+import { useTodoStore } from "@/stores/todoStore";
 
 export default function TodoList({
   child_id,
@@ -18,19 +19,28 @@ export default function TodoList({
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // const { fetchTodos, shouldRefetch, deleteTodo } = useTodoActions();
+  const { fetchTodos, deleteTodo } = useTodoActions();
+  const { shouldRefetch, setShouldRefetch } = useTodoStore();
+
   // 特定のtodoリストを取得
   useEffect(() => {
-    fetchTodos();
-  }, [child_id, is_recommended, status]);
-
-  const fetchTodos = async () => {
+    console.log("ふぇっちtodo");
     try {
-      const data = await fetchAllTodos(child_id, is_recommended, status);
-      setTodos(data);
+      fetchTodos()
+        .then((data) => {
+          setTodos(data);
+          setShouldRefetch(false); // フェッチ完了後、フラグをリセット
+        })
+        .catch(() => {
+          setError("ToDoの取得に失敗しました");
+          setShouldRefetch(false);
+        });
     } catch {
       setError("ToDoの取得に失敗しました");
     }
-  };
+  }, [shouldRefetch, setShouldRefetch]);
+  console.log("todolist");
 
   // ToDo の status 更新
   const handleUpdateStatus = async (
@@ -47,11 +57,11 @@ export default function TodoList({
 
       if (!response.ok) throw new Error("ステータス更新に失敗しました");
 
-      setTodos((prevTodos) =>
-        prevTodos.map((todo) =>
-          todo.id === todoId ? { ...todo, status: newStatus } : todo
-        )
-      );
+      // setTodos((prevTodos) =>
+      //   prevTodos.map((todo) =>
+      //     todo.id === todoId ? { ...todo, status: newStatus } : todo
+      //   )
+      // );
 
       // ToDo が完了した場合、total_point を更新
       if (newStatus === "completed" && points !== undefined) {
@@ -92,18 +102,10 @@ export default function TodoList({
   };
 
   // ToDo の削除
-  const handleDelete = async (todoId: string) => {
-    if (!confirm("このToDoを削除しますか？")) return;
-    try {
-      const response = await fetch(`/api/todo/${todoId}`, { method: "DELETE" });
-
-      if (!response.ok) throw new Error("削除に失敗しました");
-
-      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== todoId));
-    } catch (err) {
-      setError("削除に失敗しました");
-      console.error(err);
-    }
+  const handleDelete = async (e: React.MouseEvent, todoId: string) => {
+    e.preventDefault();
+    alert(todoId);
+    deleteTodo(todoId);
   };
 
   return (
@@ -183,7 +185,7 @@ export default function TodoList({
                     </Link>
                     <button
                       className="btn btn-square btn-ghost"
-                      onClick={() => handleDelete(todo.id)}
+                      onClick={(e) => handleDelete(e, todo.id)}
                     >
                       <Delete />
                     </button>

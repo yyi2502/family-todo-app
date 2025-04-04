@@ -1,6 +1,7 @@
 import AddChildModal from "@/components/child/AddChildModal";
 import ChildList from "@/components/child/ChildList";
 import AddTodoForm from "@/components/todo/AddTodoForm";
+import AddTodoModal from "@/components/todo/AddTodoModal";
 import TodoList from "@/components/todo/TodoList";
 
 export default function ParentPage() {
@@ -19,8 +20,12 @@ export default function ParentPage() {
 
         <section className="mt-20">
           <h2 className="text-lg font-bold mb-4">Todo一覧</h2>
-          <div className="mt-5">{/* <AddTodoForm /> */}</div>
-          <div className="mt-5">{/* <TodoList /> */}</div>
+          <div className="mt-5">
+            <AddTodoModal />
+          </div>
+          <div className="mt-5">
+            <TodoList />
+          </div>
         </section>
       </div>
     </>

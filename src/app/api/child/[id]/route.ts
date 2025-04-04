@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { getUser } from "@/utils/auth/auth";
 
 /**
  * 子ユーザー情報を更新
@@ -9,11 +8,7 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const user = await getUser(req);
-  if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { id } = await params;
+  const { id } = params;
   const { name, total_points } = await req.json();
 
   // users テーブルの name と total_point を更新
@@ -36,11 +31,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const user = await getUser(req);
-  if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { id } = await params;
+  const { id } = params;
 
   // users テーブルから子ユーザー削除
   const supabase = await createClient();
