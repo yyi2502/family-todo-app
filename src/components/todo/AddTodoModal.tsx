@@ -19,7 +19,7 @@ interface AddTodoFormProps {
 export default function AddTodoModal({ refetchTodos }: AddTodoFormProps) {
   const { addTodo } = useTodoActions();
   const parentData = useUserStore((state) => state.parentData);
-  const setShouldRefetch = useTodoStore((state) => state.setShouldRefetch);
+  const setRefetchTodo = useTodoStore((state) => state.setRefetchTodo);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -54,7 +54,7 @@ export default function AddTodoModal({ refetchTodos }: AddTodoFormProps) {
     addTodo({ ...data, created_by: parentData?.id || "" }, () => {
       modalRef.current?.close();
       reset();
-      setShouldRefetch(true);
+      setRefetchTodo(true);
     });
   };
 

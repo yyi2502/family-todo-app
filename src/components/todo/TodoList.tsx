@@ -1,10 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { getStatusLabel } from "@/constants/statusOptions";
 import { useUserStore } from "@/stores/userStore";
 import { TodoType } from "@/types";
 import { Delete, Pencil } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { NameDisplay } from "../user/NameDisplay";
 import { useTodoActions } from "@/hooks/useTodoActions";
@@ -18,29 +18,26 @@ export default function TodoList({
   const selectedUser = useUserStore((state) => state.selectedUser);
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  // const { fetchTodos, shouldRefetch, deleteTodo } = useTodoActions();
   const { fetchTodos, deleteTodo } = useTodoActions();
-  const { shouldRefetch, setShouldRefetch } = useTodoStore();
+  const { refetchTodo, setRefetchTodo } = useTodoStore();
 
   // 特定のtodoリストを取得
   useEffect(() => {
-    console.log("ふぇっちtodo");
+    console.log("fetchTodos");
     try {
       fetchTodos()
         .then((data) => {
           setTodos(data);
-          setShouldRefetch(false); // フェッチ完了後、フラグをリセット
+          setRefetchTodo(false); // フェッチ完了後、フラグをリセット
         })
         .catch(() => {
           setError("ToDoの取得に失敗しました");
-          setShouldRefetch(false);
+          setRefetchTodo(false);
         });
     } catch {
       setError("ToDoの取得に失敗しました");
     }
-  }, [shouldRefetch, setShouldRefetch]);
-  console.log("todolist");
+  }, [refetchTodo, setRefetchTodo]);
 
   // ToDo の status 更新
   const handleUpdateStatus = async (
@@ -86,15 +83,6 @@ export default function TodoList({
       });
 
       if (!response.ok) throw new Error("ポイントの更新に失敗しました");
-
-      // userStore の childList も更新
-      // useUserStore.setState((state) => ({
-      //   childList: state.childList.map((child) =>
-      //     child.id === child_id
-      //       ? { ...child, total_point: child.total_points + todoPoints } // 修正
-      //       : child
-      //   ),
-      // }));
     } catch (err) {
       setError("ポイントの更新に失敗しました");
       console.error(err);
@@ -104,7 +92,6 @@ export default function TodoList({
   // ToDo の削除
   const handleDelete = async (e: React.MouseEvent, todoId: string) => {
     e.preventDefault();
-    alert(todoId);
     deleteTodo(todoId);
   };
 

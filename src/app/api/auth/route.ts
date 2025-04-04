@@ -7,14 +7,6 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: Request) {
   try {
     const { action, email, password, name } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "メールアドレスとパスワードは必須です。" },
-        { status: 400 }
-      );
-    }
-
     const supabase = await createClient();
 
     // --------------------------------------------------
@@ -116,14 +108,13 @@ export async function POST(req: Request) {
     // --------------------------------------------------
     if (action === "signout") {
       const { error } = await supabase.auth.signOut();
-
       if (error) {
         return NextResponse.json(
           { error: "ログアウトに失敗しました。入力内容を確認してください。" },
           { status: 400 }
         );
       }
-
+      console.log("ログアウト成功");
       return NextResponse.json({ message: "ログアウト成功" }, { status: 200 });
     }
 

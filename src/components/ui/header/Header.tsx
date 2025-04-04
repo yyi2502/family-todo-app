@@ -35,15 +35,27 @@ export default function Header() {
   }
 
   const handleSignout = async () => {
-    await fetch("/api/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "signout" }),
-    });
-    clearUser();
-    // window.location.reload();
-    router.push("/");
-    setIsDrawerOpen(false); // サインアウト時にドロワーを閉じる
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "signout" }),
+      });
+      const resData = await res.json();
+
+      if (!res.ok) {
+        console.error(
+          resData.error ||
+            "ログアウトに失敗しました。入力内容を確認してください。"
+        );
+        return;
+      }
+      clearUser();
+      router.push("/");
+      setIsDrawerOpen(false); // サインアウト時にドロワーを閉じる
+    } catch (err) {
+      console.error("ネットワークエラーまたは予期しないエラー:", err);
+    }
   };
 
   return (

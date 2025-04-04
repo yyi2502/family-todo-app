@@ -1,27 +1,16 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { TodoType } from "@/types";
 import { useTodoStore } from "@/stores/todoStore";
 
 export function useTodoActions() {
-  const { shouldRefetch, setShouldRefetch } = useTodoStore();
-  // const [shouldRefetch, setShouldRefetch] = useState(false);
-  // ✅ 外部からこのフラグを監視して再取得に使える
+  const { refetchTodo, setRefetchTodo } = useTodoStore();
+  // refetch用のトリガー
   const triggerRefetch = () => {
-    console.log("shouldRefetch" + shouldRefetch);
-    setShouldRefetch(!shouldRefetch); // 状態を反転させて再取得をトリガー
+    setRefetchTodo(!refetchTodo); // 状態を反転させて再取得をトリガー
   };
-
-  // export const useTodoActions = (child_id?: string) => {
-  const [error, setError] = useState<string | null>(null);
 
   // Read--------------------------------
   // todo読み込み
-
-  // 使い方
-  // const { addTodo } = useTodoActions();
-  // addTodo({ ...data, parent_id: parentData?.id || "" }, ()=>{}}
   const fetchTodos = async (
     child_id?: string,
     is_recommended?: boolean,
@@ -71,17 +60,15 @@ export function useTodoActions() {
       });
       if (!res.ok) throw new Error("todo追加に失敗しました");
 
-      // await fetchChildren(); // 最新の子リストを取得
       console.log("add");
       if (onSuccess) {
         onSuccess();
-      } // 成功時の処理
+      }
     } catch (err) {
       console.error("追加エラー:", err);
     }
     triggerRefetch(); // 再取得トリガー
   };
-  // []
 
   // UPDATE--------------------------------
   // ToDo の status 更新
@@ -103,10 +90,8 @@ export function useTodoActions() {
       });
       if (!res.ok) throw new Error("更新に失敗しました");
 
-      // await fetchTodo(); // 最新の子リストを取得
-
-      triggerRefetch(); // ✅ 追加後に再取得トリガー
-      if (onSuccess) onSuccess(); // 成功時の処理
+      triggerRefetch();
+      if (onSuccess) onSuccess();
     } catch (err) {
       console.error("更新エラー:", err);
     }
@@ -121,13 +106,9 @@ export function useTodoActions() {
   //   }
   // };
 
+  // DELETE--------------------------------
   // ToDo の削除
-  const deleteTodo = async (
-    // todos: TodoType[],
-    // setTodos: (todos: TodoType[]) => void,
-    todoId: string,
-    onSuccess?: () => void
-  ) => {
+  const deleteTodo = async (todoId: string, onSuccess?: () => void) => {
     if (!confirm("このToDoを削除しますか？")) return;
     try {
       const res = await fetch(`/api/todo/${todoId}`, {
@@ -135,11 +116,11 @@ export function useTodoActions() {
       });
       if (!res.ok) throw new Error("削除に失敗しました");
 
-      if (onSuccess) onSuccess(); // 成功時の処理
+      if (onSuccess) onSuccess();
     } catch (err) {
       console.error("削除エラー:", err);
     }
-    triggerRefetch(); // ✅ 追加後に再取得トリガー
+    triggerRefetch();
   };
 
   return {
@@ -147,8 +128,7 @@ export function useTodoActions() {
     fetchTodos,
     updateTodo,
     deleteTodo,
-    shouldRefetch,
     triggerRefetch,
-    error,
+    refetchTodo,
   };
 }
