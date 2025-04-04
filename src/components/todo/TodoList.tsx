@@ -3,39 +3,53 @@
 import Link from "next/link";
 import { getStatusLabel } from "@/constants/statusOptions";
 import { useUserStore } from "@/stores/userStore";
-import { TodoType } from "@/types";
+import { TodoPropsType, TodoType } from "@/types";
 import { Delete, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NameDisplay } from "../user/NameDisplay";
 import { useTodoActions } from "@/hooks/useTodoActions";
 import { useTodoStore } from "@/stores/todoStore";
+import UpdateTodoModal from "./UpdateTodoModal";
 
 export default function TodoList({
   child_id,
   is_recommended,
   status,
-}: TodoType) {
+}: TodoPropsType) {
   const selectedUser = useUserStore((state) => state.selectedUser);
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { fetchTodos, deleteTodo } = useTodoActions();
   const { refetchTodo, setRefetchTodo } = useTodoStore();
 
-  // 特定のtodoリストを取得
+  // 初回ロード
   useEffect(() => {
-    console.log("fetchTodos");
-    try {
-      fetchTodos()
-        .then((data) => {
-          setTodos(data);
-          setRefetchTodo(false); // フェッチ完了後、フラグをリセット
-        })
-        .catch(() => {
-          setError("ToDoの取得に失敗しました");
-          setRefetchTodo(false);
-        });
-    } catch {
-      setError("ToDoの取得に失敗しました");
+    const fetchData = async () => {
+      try {
+        const data = await fetchTodos();
+        setTodos(data);
+      } catch (err) {
+        setError("ToDoの取得に失敗しました");
+      }
+    };
+    fetchData(); // 初回ロードで必ず取得
+  }, []);
+
+  // todoリストを取得
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("fetchTodos");
+      try {
+        const data = await fetchTodos();
+        setTodos(data);
+      } catch (err) {
+        setError("ToDoの取得に失敗しました");
+      } finally {
+        setRefetchTodo(false); // フェッチ完了後、フラグをリセット
+      }
+    };
+    if (refetchTodo) {
+      fetchData();
     }
   }, [refetchTodo, setRefetchTodo]);
 
@@ -138,22 +152,6 @@ export default function TodoList({
                         やった！
                       </button>
                     )}
-                    {/* <button
-                      className="btn btn-sm bg-blue-500 text-white"
-                      disabled={todo.status === "processing"}
-                      onClick={() => handleUpdateStatus(todo.id, "processing")}
-                    >
-                      やる！
-                    </button>
-                    <button
-                      className="btn btn-sm bg-green-500 text-white"
-                      disabled={todo.status === "completed"}
-                      onClick={() =>
-                        handleUpdateStatus(todo.id, "completed", todo.points)
-                      }
-                    >
-                      やった！
-                    </button> */}
                     <button
                       className="btn btn-sm bg-gray-500 text-white"
                       disabled={todo.status === "pending"}
@@ -165,11 +163,7 @@ export default function TodoList({
                 ) : (
                   <>
                     {/* 編集 & 削除ボタン */}
-                    <Link href={`/main/todo/${todo.id}`}>
-                      <button className="btn btn-square btn-ghost">
-                        <Pencil />
-                      </button>
-                    </Link>
+                    <UpdateTodoModal todoId={todo.id} />
                     <button
                       className="btn btn-square btn-ghost"
                       onClick={(e) => handleDelete(e, todo.id)}

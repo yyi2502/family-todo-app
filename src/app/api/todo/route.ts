@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     const child_id = searchParams.get("child_id");
     const is_recommended = searchParams.get("is_recommended");
 
-    let query = await supabase.from("todos").select("*");
+    let query = supabase.from("todos").select("*");
 
     // statusでのフィルタリング
     if (status) {
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
 
     if (child_id) {
       query = query.eq("child_id", child_id);
-      query = query.neq("status", "completed");
+      // query = query.neq("status", "completed");
     }
 
     // is_recommendedでのフィルタリング

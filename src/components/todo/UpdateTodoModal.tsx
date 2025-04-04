@@ -3,31 +3,22 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AddTodoSchema } from "@/schemas";
-import { useState, useTransition, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/stores/userStore";
-import { Plus } from "lucide-react";
+import { UpdateTodoSchema } from "@/schemas";
+import { useState, useRef } from "react";
+import { Pencil } from "lucide-react";
 import { useTodoActions } from "@/hooks/useTodoActions";
 import { useTodoStore } from "@/stores/todoStore";
 
-type FormData = z.infer<typeof AddTodoSchema>;
+type FormData = z.infer<typeof UpdateTodoSchema>;
 
-export default function AddTodoModal() {
-  const { addTodo } = useTodoActions();
-  const parentData = useUserStore((state) => state.parentData);
+export default function UpdateTodoModal({ todoId }: { todoId: string }) {
+  const { updateTodo, fetchOneTodo } = useTodoActions();
   const setRefetchTodo = useTodoStore((state) => state.setRefetchTodo);
+
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const modalRef = useRef<HTMLDialogElement | null>(null); // useRefでモーダル要素を取得
 
-  // ステータスの選択肢（子供向けの言い方）
-  const statusOptions = [
-    { value: "pending", label: "まだやらないよ！" },
-    { value: "processing", label: "今やってるよ！" },
-    { value: "completed", label: "できたよ！" },
-  ];
+  const modalRef = useRef<HTMLDialogElement | null>(null);
 
   const {
     register,
@@ -35,8 +26,9 @@ export default function AddTodoModal() {
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(AddTodoSchema),
+    resolver: zodResolver(UpdateTodoSchema),
     defaultValues: {
+      title: "",
       points: 10,
       is_recommended: false,
       description: "",
@@ -48,23 +40,27 @@ export default function AddTodoModal() {
   const onSubmit = async (data: FormData) => {
     setError("");
     setMessage("");
-    addTodo({ ...data, created_by: parentData?.id || "" }, () => {
+    updateTodo(todoId, data, () => {
       modalRef.current?.close();
       reset();
       setRefetchTodo(true);
     });
   };
 
-  const handleModal = () => {
+  const handleModal = async () => {
+    const data = await fetchOneTodo(todoId);
+    if (data) {
+      reset(data); // フォームに初期値を反映
+    }
     modalRef.current?.showModal();
   };
 
   return (
     <>
-      <button className="btn" onClick={handleModal}>
-        todo追加
-        <Plus width={20} height={20} />
+      <button className="btn btn-square btn-ghost" onClick={handleModal}>
+        <Pencil width={20} height={20} />
       </button>
+
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
           <form method="dialog">
@@ -72,23 +68,26 @@ export default function AddTodoModal() {
               ✕
             </button>
           </form>
-          <h3 className="mb-4">Todo追加</h3>
+
+          <h3 className="mb-4">Todo編集</h3>
+
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="bg-base-200 border border-base-300 p-4 rounded-box"
           >
-            <fieldset className="fieldset">
+            <fieldset className="fieldset flex flex-col">
+              {/* タイトル */}
               <label className="fieldset-label">タイトル</label>
               <input
                 type="text"
                 {...register("title")}
                 className="input w-full"
-                placeholder="ToDo のタイトル"
               />
               {errors.title && (
                 <p className="text-red-500 text-sm">{errors.title.message}</p>
               )}
 
+              {/* ポイント */}
               <label className="fieldset-label mt-4">ポイント</label>
               <input
                 type="number"
@@ -99,20 +98,7 @@ export default function AddTodoModal() {
                 <p className="text-red-500 text-sm">{errors.points.message}</p>
               )}
 
-              {/* ステータス選択セレクトボックス */}
-              {/* <label className="fieldset-label">ステータス</label>
-              <select {...register("status")} className="select w-full">
-                {statusOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {errors.status && (
-                <p className="text-red-500 text-sm">{errors.status.message}</p>
-              )} */}
-
-              {/* 説明文入力 */}
+              {/* 説明 */}
               <label className="fieldset-label mt-4">説明（任意）</label>
               <textarea
                 {...register("description")}
@@ -125,8 +111,7 @@ export default function AddTodoModal() {
                 </p>
               )}
 
-              {/* おすすめ表示チェックボックス */}
-
+              {/* おすすめチェックボックス */}
               <label className="fieldset-label mt-4">
                 <input
                   type="checkbox"
@@ -136,24 +121,8 @@ export default function AddTodoModal() {
                 おすすめに表示する
               </label>
 
-              {/* 子ども選択セレクトボックス */}
-              {/* <label className="fieldset-label">どの子どもが対応するか</label>
-              <select {...register("child_id")} className="select w-full">
-                <option value="">選択してください</option>
-                {childList.map((child) => (
-                  <option key={child.id} value={child.id}>
-                    {child.name}
-                  </option>
-                ))}
-              </select>
-              {errors.child_id && (
-                <p className="text-red-500 text-sm">
-                  {errors.child_id.message}
-                </p>
-              )} */}
-
               <button type="submit" className="btn btn-neutral mt-4 w-full">
-                {isPending ? "登録中..." : "追加"}
+                保存
               </button>
             </fieldset>
           </form>

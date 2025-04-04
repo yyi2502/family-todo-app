@@ -1,6 +1,7 @@
 "use client";
 
 import { useTodoStore } from "@/stores/todoStore";
+import { TodoType } from "@/types";
 
 export function useTodoActions() {
   const { refetchTodo, setRefetchTodo } = useTodoStore();
@@ -11,6 +12,8 @@ export function useTodoActions() {
 
   // Read--------------------------------
   // todo読み込み
+  // ・全件
+  // ・条件あり
   const fetchTodos = async (
     child_id?: string,
     is_recommended?: boolean,
@@ -20,7 +23,7 @@ export function useTodoActions() {
       const url = new URL("/api/todo", window.location.origin);
 
       if (child_id) url.searchParams.append("child_id", child_id);
-      if (is_recommended)
+      if (is_recommended !== undefined)
         url.searchParams.append("is_recommended", String(is_recommended));
       if (status) url.searchParams.append("status", status);
 
@@ -32,6 +35,24 @@ export function useTodoActions() {
     } catch (err) {
       console.error("ToDoの取得に失敗しました", err);
       throw new Error("ToDoの取得に失敗しました");
+    }
+  };
+
+  // Read--------------------------------
+  // todo1件読み込み
+  const fetchOneTodo = async (
+    todo_id: string
+  ): Promise<TodoType | undefined> => {
+    try {
+      const res = await fetch(`/api/todo/${todo_id}`);
+      if (!res.ok) {
+        throw new Error(`todoデータ取得失敗: ${res.status}`);
+      }
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("todoユーザーのデータ取得エラー:", err);
+      return undefined;
     }
   };
 
@@ -78,10 +99,11 @@ export function useTodoActions() {
       title?: string;
       description?: string;
       points?: number;
-      newStatus: "pending" | "processing" | "completed";
+      status: "pending" | "processing" | "completed";
     },
     onSuccess?: () => void
   ) => {
+    console.log("update");
     try {
       const res = await fetch(`/api/todo/${todoId}`, {
         method: "PUT",
@@ -126,6 +148,7 @@ export function useTodoActions() {
   return {
     addTodo,
     fetchTodos,
+    fetchOneTodo,
     updateTodo,
     deleteTodo,
     triggerRefetch,

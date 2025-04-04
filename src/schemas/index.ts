@@ -51,6 +51,19 @@ export const AddTodoSchema = z.object({
   status: z.enum(["pending", "processing", "completed"]),
 });
 
+// Todo更新用Schema
+export const UpdateTodoSchema = z.object({
+  title: z
+    .string()
+    .min(1, "タイトルは必須です")
+    .transform((t) => t.trim()),
+  description: z.string().optional(),
+  points: z.number().min(0).int(),
+  is_recommended: z.boolean(),
+  child_id: z.string().optional(),
+  status: z.enum(["pending", "processing", "completed"]),
+});
+
 // リワード追加用Schema
 export const AddRewardSchema = z.object({
   title: z

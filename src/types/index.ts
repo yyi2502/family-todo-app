@@ -23,6 +23,12 @@ export type TodoType = {
   child_id: string;
 };
 
+export type TodoPropsType = {
+  status?: "pending" | "processing" | "completed";
+  is_recommended?: boolean;
+  child_id?: string;
+};
+
 export type RewardType = {
   id: string;
   title: string;
@@ -32,3 +38,9 @@ export type RewardType = {
   required_points: number;
   is_active: boolean;
 };
+
+
+
+export type AddTodoFormProps = {
+  
+}
