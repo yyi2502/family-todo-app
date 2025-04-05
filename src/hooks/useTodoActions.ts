@@ -62,7 +62,6 @@ export function useTodoActions() {
   // 使い方
   // const { addTodo } = useTodoActions();
   // addTodo({ ...data, parent_id: parentData?.id || "" }, ()=>{}}
-  // const addTodo = useCallback(
   const addTodo = async (
     newTodo: {
       title: string;
@@ -100,6 +99,7 @@ export function useTodoActions() {
       description?: string;
       points?: number;
       status: "pending" | "processing" | "completed";
+      child_id?: string;
     },
     onSuccess?: () => void
   ) => {

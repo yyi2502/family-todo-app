@@ -21,6 +21,7 @@ export async function GET(req: Request) {
 
     // statusでのフィルタリング
     if (status) {
+      query = query.eq("child_id", child_id);
       query = query.eq("status", status);
     }
 
@@ -31,7 +32,9 @@ export async function GET(req: Request) {
 
     // is_recommendedでのフィルタリング
     if (is_recommended !== null) {
-      query = query.eq("is_recommended", is_recommended === "true");
+      query = query.eq("is_recommended", "true");
+      query = query.neq("status", "completed");
+      query = query.neq("status", "processing");
     }
 
     const { data, error } = await query;

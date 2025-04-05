@@ -9,9 +9,6 @@ export function NameDisplay({ id }: { id: string }) {
     const child = childList.find((c) => c.id === id);
     if (child) return child.name;
 
-    // parentData の id と一致する場合
-    if (parentData?.id === id) return parentData.name;
-
     return "未登録";
   };
 
