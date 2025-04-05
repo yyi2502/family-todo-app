@@ -103,7 +103,6 @@ export function useTodoActions() {
     },
     onSuccess?: () => void
   ) => {
-    console.log("update");
     try {
       const res = await fetch(`/api/todo/${todoId}`, {
         method: "PUT",

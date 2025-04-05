@@ -1,15 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { getStatusLabel } from "@/constants/statusOptions";
 import { useUserStore } from "@/stores/userStore";
 import { TodoPropsType, TodoType } from "@/types";
-import { Delete, Pencil, Star } from "lucide-react";
+import { Delete, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NameDisplay } from "../user/NameDisplay";
 import { useTodoActions } from "@/hooks/useTodoActions";
 import { useTodoStore } from "@/stores/todoStore";
 import UpdateTodoModal from "./UpdateTodoModal";
+import { useChildActions } from "@/hooks/useChildActions";
 
 export default function TodoList({
   child_id,
@@ -17,10 +16,11 @@ export default function TodoList({
   status,
 }: TodoPropsType) {
   const selectedUser = useUserStore((state) => state.selectedUser);
+  const { refetchTodo, setRefetchTodo } = useTodoStore();
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { fetchTodos, updateTodo, deleteTodo } = useTodoActions();
-  const { refetchTodo, setRefetchTodo } = useTodoStore();
+  const { updateChild } = useChildActions();
 
   // 初回ロード
   useEffect(() => {
@@ -59,29 +59,18 @@ export default function TodoList({
     newStatus: "pending" | "processing" | "completed",
     points?: number
   ) => {
-    const updatedData = {
-      status: newStatus,
-      child_id: newStatus === "pending" ? "" : (selectedUser?.id ?? ""),
-    };
-    updateTodo(todoId, updatedData);
-  };
-  // total_point の更新
-  const updateTotalPoints = async (todoPoints: number) => {
-    try {
-      const response = await fetch(`/api/user/${child_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          points: todoPoints, // 加算するポイント数
-        }),
-      });
+    if (selectedUser) {
+      const updatedData = {
+        status: newStatus,
+        child_id: newStatus === "pending" ? "" : selectedUser.id,
+      };
+      updateTodo(todoId, updatedData);
 
-      if (!response.ok) throw new Error("ポイントの更新に失敗しました");
-    } catch (err) {
-      setError("ポイントの更新に失敗しました");
-      console.error(err);
+      //ポイント更新
+      if (newStatus === "completed" && points) {
+        const newTotalPoints = selectedUser.total_points + points;
+        updateChild(selectedUser.id, { total_points: newTotalPoints });
+      }
     }
   };
 
