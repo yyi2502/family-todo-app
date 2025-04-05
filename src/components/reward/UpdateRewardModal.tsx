@@ -3,23 +3,22 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AddRewardSchema } from "@/schemas";
-import { useState, useTransition, useRef, useEffect } from "react";
-import { useUserStore } from "@/stores/userStore";
-import { Plus } from "lucide-react";
+import { UpdateRewardSchema } from "@/schemas";
+import { useState, useRef } from "react";
+import { Pencil } from "lucide-react";
 import { useRewardActions } from "@/hooks/useRewardActions";
 import { useRewardStore } from "@/stores/rewardStore";
 
-type FormData = z.infer<typeof AddRewardSchema>;
+type FormData = z.infer<typeof UpdateRewardSchema>;
 
-export default function AddRewardModal() {
-  const { addReward } = useRewardActions();
-  const parentData = useUserStore((state) => state.parentData);
+export default function UpdateRewardModal({ rewardId }: { rewardId: string }) {
+  const { updateReward, fetchOneReward } = useRewardActions();
   const setRefetchReward = useRewardStore((state) => state.setRefetchReward);
+
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const modalRef = useRef<HTMLDialogElement | null>(null); // useRefでモーダル要素を取得
+
+  const modalRef = useRef<HTMLDialogElement | null>(null);
 
   const {
     register,
@@ -27,7 +26,7 @@ export default function AddRewardModal() {
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(AddRewardSchema),
+    resolver: zodResolver(UpdateRewardSchema),
     defaultValues: {
       title: "",
       required_points: 100,
@@ -39,54 +38,65 @@ export default function AddRewardModal() {
   const onSubmit = async (data: FormData) => {
     setError("");
     setMessage("");
-    addReward(
-      {
-        ...data,
-        is_active: data.is_active ?? false,
-        created_by: parentData?.id || "",
-      },
-      () => {
-        modalRef.current?.close();
-        reset();
-        setRefetchReward(true);
-      }
-    );
+    updateReward(rewardId, data, () => {
+      setRefetchReward(true);
+      modalRef.current?.close();
+      reset();
+    });
   };
 
-  const handleModal = () => {
+  const handleModal = async () => {
+    const data = await fetchOneReward(rewardId);
+    if (data) {
+      const safeData: FormData = {
+        title: data.title ?? "",
+        required_points: data.required_points ?? 0,
+        is_active: data.is_active ?? false,
+        description: data.description ?? "",
+        child_id: data.child_id ?? "",
+      };
+
+      reset(safeData); // フォームに初期値を反映
+    }
     modalRef.current?.showModal();
   };
 
   return (
     <>
-      <button className="btn" onClick={handleModal}>
-        リワード追加
-        <Plus width={20} height={20} />
+      <button className="btn btn-square btn-ghost" onClick={handleModal}>
+        <Pencil width={20} height={20} />
       </button>
+
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box">
-          <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-              ✕
-            </button>
-          </form>
-          <h3 className="mb-4">リワード追加</h3>
+        <div className="modal-box relative">
+          <button
+            onClick={() => modalRef.current?.close()}
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          >
+            ✕
+          </button>
+
+          <h3 className="mb-4">リワード編集</h3>
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit(onSubmit)(e);
+            }}
             className="bg-base-200 border border-base-300 p-4 rounded-box"
           >
-            <fieldset className="fieldset">
+            <fieldset className="fieldset flex flex-col">
+              {/* タイトル */}
               <label className="fieldset-label">タイトル</label>
               <input
                 type="text"
                 {...register("title")}
                 className="input w-full"
-                placeholder="ゲーム1時間"
               />
               {errors.title && (
                 <p className="text-red-500 text-sm">{errors.title.message}</p>
               )}
 
+              {/* ポイント */}
               <label className="fieldset-label mt-4">必要ポイント</label>
               <input
                 type="number"
@@ -99,12 +109,12 @@ export default function AddRewardModal() {
                 </p>
               )}
 
-              {/* 説明文入力 */}
+              {/* 説明 */}
               <label className="fieldset-label mt-4">説明（任意）</label>
               <textarea
                 {...register("description")}
                 className="textarea w-full"
-                placeholder="リワード の詳細な説明"
+                placeholder="リワードの詳細説明"
               />
               {errors.description && (
                 <p className="text-red-500 text-sm">
@@ -123,7 +133,7 @@ export default function AddRewardModal() {
               </label>
 
               <button type="submit" className="btn btn-neutral mt-4 w-full">
-                {isPending ? "登録中..." : "追加"}
+                保存
               </button>
             </fieldset>
           </form>

@@ -1,13 +1,13 @@
 "use client";
 
-import AddRewardForm from "@/components/reward/AddRewardForm";
+import AddRewardModal from "@/components/reward/AddRewardModal";
 import RewardList from "@/components/reward/RewardList";
 
 export default function RewardPage() {
   return (
     <>
       <RewardList />
-      <AddRewardForm />
+      <AddRewardModal />
     </>
   );
 }

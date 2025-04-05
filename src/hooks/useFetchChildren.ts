@@ -8,6 +8,9 @@ import { useUserStore } from "@/stores/userStore";
  */
 export function useFetchChildren() {
   const setChildList = useUserStore((state) => state.setChildList);
+  const selectedUser = useUserStore((state) => state.selectedUser);
+  const setSelectedUser = useUserStore((state) => state.setSelectedUser);
+  const selectUserId = selectedUser?.id;
 
   const fetchChildren = useCallback(async () => {
     console.log("fetch children 開始");
@@ -19,6 +22,9 @@ export function useFetchChildren() {
       }
       const data = await res.json();
       setChildList(data.children);
+      if (selectUserId) {
+        setSelectedUser(selectUserId);
+      }
       console.log("fetch children 完了", data.children);
     } catch (err) {
       console.error("子ユーザーのデータ取得エラー:", err);

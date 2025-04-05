@@ -1,7 +1,7 @@
 "use client";
 
 import { useRewardStore } from "@/stores/rewardStore";
-import { RewardPropsType, RewardType } from "@/types";
+import { AddRewardPropsType, RewardPropsType, RewardType } from "@/types";
 
 export function useRewardActions() {
   const { refetchReward, setRefetchReward } = useRewardStore();
@@ -57,7 +57,10 @@ export function useRewardActions() {
   // 使い方
   // const { addReward } = useRewardActions();
   // addReward({ ...data, parent_id: parentData?.id || "" }, ()=>{}}
-  const addReward = async (newReward: RewardType, onSuccess?: () => void) => {
+  const addReward = async (
+    newReward: AddRewardPropsType,
+    onSuccess?: () => void
+  ) => {
     try {
       const res = await fetch("/api/reward", {
         method: "POST",

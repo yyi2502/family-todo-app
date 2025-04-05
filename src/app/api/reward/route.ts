@@ -22,9 +22,9 @@ export async function GET(req: Request) {
     }
 
     // is_activeでのフィルタリング
-    if (is_active !== null) {
-      query = query.eq("is_active", "true");
-    }
+    // if (is_active !== null) {
+    //   query = query.eq("is_active", "true");
+    // }
 
     const { data, error } = await query;
 
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       .insert([
         {
           title,
-          is_active: true,
+          is_active,
           description,
           required_points: required_points || 100,
           created_by: userData.user?.id,

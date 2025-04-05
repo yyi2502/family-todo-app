@@ -22,13 +22,6 @@ export default function AddTodoModal() {
   const [isPending, startTransition] = useTransition();
   const modalRef = useRef<HTMLDialogElement | null>(null); // useRefでモーダル要素を取得
 
-  // ステータスの選択肢（子供向けの言い方）
-  const statusOptions = [
-    { value: "pending", label: "まだやらないよ！" },
-    { value: "processing", label: "今やってるよ！" },
-    { value: "completed", label: "できたよ！" },
-  ];
-
   const {
     register,
     handleSubmit,

@@ -73,3 +73,11 @@ export type RewardStoreType = {
   refetchReward: boolean;
   setRefetchReward: (value: boolean) => void;
 };
+
+export type AddRewardPropsType = {
+  title: string;
+  description?: string | null;
+  created_by: string;
+  required_points: number;
+  is_active: boolean;
+};

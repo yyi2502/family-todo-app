@@ -135,28 +135,29 @@ export default function Header() {
               {/* {parentData ? (
               {selectedUser.role === "parent" && 
               <> */}
+              <li>おとな：{parentData?.name}さん</li>
               <li>
-                おとな：{parentData?.name}さん
-                <Link href="" onClick={() => setIsDrawerOpen(false)}>
-                  子ユーザー
-                </Link>
+                子ユーザー
                 <ChildList />
               </li>
               <li>
-                <Link href="/todo" onClick={() => setIsDrawerOpen(false)}>
+                <Link href="/main/todo" onClick={() => setIsDrawerOpen(false)}>
                   やること一覧
                 </Link>
               </li>
               <li>
-                <Link href="/reward" onClick={() => setIsDrawerOpen(false)}>
+                <Link
+                  href="/main/reward"
+                  onClick={() => setIsDrawerOpen(false)}
+                >
                   リワード一覧
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/setting" onClick={() => setIsDrawerOpen(false)}>
                   設定
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <button
                   onClick={handleSignout}

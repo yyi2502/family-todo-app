@@ -21,7 +21,6 @@ export default function ChildDetailPage() {
 
       <h3 className="text-lg font-semibold mt-6">クリア</h3>
       <TodoList child_id={child.id} status={"completed"} />
-      <RewardList />
     </>
   ) : (
     <div>ユーザーが見つかりません</div>

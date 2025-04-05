@@ -72,9 +72,10 @@ export const AddRewardSchema = z.object({
     .transform((t) => t.trim()),
   description: z.string().optional(),
   required_points: z.number().min(1).int(),
+  is_active: z.boolean().optional(),
 });
 
-// リワード編集用Schema
+// リワード更新用Schema
 export const UpdateRewardSchema = z.object({
   title: z
     .string()
@@ -82,4 +83,6 @@ export const UpdateRewardSchema = z.object({
     .transform((t) => t.trim()),
   description: z.string().optional(),
   required_points: z.number().min(1).int(),
+  is_active: z.boolean().optional(),
+  child_id: z.string().optional(),
 });

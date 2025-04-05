@@ -78,24 +78,14 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
           >
             ✕
           </button>
-          {/* <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-              ✕
-            </button>
-          </form> */}
 
           <h3 className="mb-4">Todo編集</h3>
 
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              console.log("submitされてる！");
               handleSubmit(onSubmit)(e);
-              console.log("バリデーションエラー:", errors);
             }}
-            // }}>
-            //           <form
-            //             onSubmit={handleSubmit(onSubmit)}
             className="bg-base-200 border border-base-300 p-4 rounded-box"
           >
             <fieldset className="fieldset flex flex-col">

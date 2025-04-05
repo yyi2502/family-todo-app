@@ -9,6 +9,7 @@ import UpdateTodoModal from "./UpdateTodoModal";
 import { TodoPropsType, TodoType } from "@/types";
 import { Delete, Star } from "lucide-react";
 import { NameDisplay } from "../user/NameDisplay";
+import { runConfetti } from "@/utils/confetti/confetti";
 
 export default function TodoList({
   child_id,
@@ -125,13 +126,14 @@ export default function TodoList({
                         <>
                           <button
                             className="btn btn-sm bg-green-500 text-white"
-                            onClick={() =>
+                            onClick={() => {
                               handleUpdateStatus(
                                 todo.id,
                                 "completed",
                                 todo.points
-                              )
-                            }
+                              );
+                              runConfetti(); //紙吹雪
+                            }}
                           >
                             やった！
                           </button>
