@@ -132,9 +132,6 @@ export default function Header() {
               <SquareX />
             </button>
             <ul className="menu bg-base-200 min-h-full w-80 p-4">
-              {/* {parentData ? (
-              {selectedUser.role === "parent" && 
-              <> */}
               <li>おとな：{parentData?.name}さん</li>
               <li>
                 子ユーザー
@@ -167,21 +164,6 @@ export default function Header() {
                   ログアウト
                 </button>
               </li>
-              {/* </>}
-            ) : (
-              <>
-                <li>
-                  <Link href="/signin" onClick={() => setIsDrawerOpen(false)}>
-                    ログイン
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/signup" onClick={() => setIsDrawerOpen(false)}>
-                    新規登録
-                  </Link>
-                </li>
-              </>
-            )} */}
             </ul>
           </div>
         )}

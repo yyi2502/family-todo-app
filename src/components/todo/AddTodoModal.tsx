@@ -4,8 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AddTodoSchema } from "@/schemas";
-import { useState, useTransition, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { Plus } from "lucide-react";
 import { useTodoActions } from "@/hooks/useTodoActions";
@@ -19,7 +18,6 @@ export default function AddTodoModal() {
   const setRefetchTodo = useTodoStore((state) => state.setRefetchTodo);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [isPending, startTransition] = useTransition();
   const modalRef = useRef<HTMLDialogElement | null>(null); // useRefでモーダル要素を取得
 
   const {
@@ -92,19 +90,6 @@ export default function AddTodoModal() {
                 <p className="text-red-500 text-sm">{errors.points.message}</p>
               )}
 
-              {/* ステータス選択セレクトボックス */}
-              {/* <label className="fieldset-label">ステータス</label>
-              <select {...register("status")} className="select w-full">
-                {statusOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {errors.status && (
-                <p className="text-red-500 text-sm">{errors.status.message}</p>
-              )} */}
-
               {/* 説明文入力 */}
               <label className="fieldset-label mt-4">説明（任意）</label>
               <textarea
@@ -119,7 +104,6 @@ export default function AddTodoModal() {
               )}
 
               {/* おすすめ表示チェックボックス */}
-
               <label className="fieldset-label mt-4">
                 <input
                   type="checkbox"
@@ -129,24 +113,8 @@ export default function AddTodoModal() {
                 おすすめに表示する
               </label>
 
-              {/* 子ども選択セレクトボックス */}
-              {/* <label className="fieldset-label">どの子どもが対応するか</label>
-              <select {...register("child_id")} className="select w-full">
-                <option value="">選択してください</option>
-                {childList.map((child) => (
-                  <option key={child.id} value={child.id}>
-                    {child.name}
-                  </option>
-                ))}
-              </select>
-              {errors.child_id && (
-                <p className="text-red-500 text-sm">
-                  {errors.child_id.message}
-                </p>
-              )} */}
-
               <button type="submit" className="btn btn-neutral mt-4 w-full">
-                {isPending ? "登録中..." : "追加"}
+                追加
               </button>
             </fieldset>
           </form>
