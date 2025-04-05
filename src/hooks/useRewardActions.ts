@@ -1,218 +1,132 @@
 "use client";
 
-export function useRewardActions() {}
+import { useRewardStore } from "@/stores/rewardStore";
+import { RewardPropsType, RewardType } from "@/types";
 
-// // Read--------------------------------
-// // todo読み込み
-// // ・全件
-// // ・条件あり
-// const fetchTodos = async (
-//   child_id?: string,
-//   is_recommended?: boolean,
-//   status?: "pending" | "processing" | "completed"
-// ) => {
-//   try {
-//     const url = new URL("/api/todo", window.location.origin);
+export function useRewardActions() {
+  const { refetchReward, setRefetchReward } = useRewardStore();
+  // refetch用のトリガー
+  const triggerRefetch = () => {
+    setRefetchReward(!refetchReward); // 状態を反転させて再取得をトリガー
+  };
 
-//     if (child_id) url.searchParams.append("child_id", child_id);
-//     if (is_recommended !== undefined)
-//       url.searchParams.append("is_recommended", String(is_recommended));
-//     if (status) url.searchParams.append("status", status);
+  // Read--------------------------------
+  // rewards 読み込み
+  // ・全件
+  // ・条件あり
+  const fetchRewards = async ({ child_id, is_active }: RewardPropsType) => {
+    try {
+      const url = new URL("/api/reward", window.location.origin);
 
-//     const response = await fetch(url.toString());
-//     const todos = await response.json();
-//     if (!response.ok) throw new Error(todos.error);
+      if (child_id) url.searchParams.append("child_id", child_id);
+      if (is_active !== undefined)
+        url.searchParams.append("is_active", String(is_active));
 
-//     return todos;
-//   } catch (err) {
-//     console.error("ToDoの取得に失敗しました", err);
-//     throw new Error("ToDoの取得に失敗しました");
-//   }
-// };
+      const response = await fetch(url.toString());
+      const rewards = await response.json();
+      if (!response.ok) throw new Error(rewards.error);
 
-// // total_point の更新
-// const updateTotalPoints = async (todoPoints: number) => {
-//   try {
-//     const response = await fetch(`/api/user/${child_id}`, {
-//       method: "PUT",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         points: todoPoints, // 加算するポイント数
-//       }),
-//     });
+      return rewards;
+    } catch (err) {
+      console.error("rewardの取得に失敗しました", err);
+      throw new Error("rewardの取得に失敗しました");
+    }
+  };
 
-//     if (!response.ok) throw new Error("ポイントの更新に失敗しました");
-//   } catch (err) {
-//     setError("ポイントの更新に失敗しました");
-//     console.error(err);
-//   }
-// };
-//
-//
-//
-// "use client";
-// import { useRouter } from "next/navigation";
-// import { useUserStore } from "@/stores/userStore";
-// import { useCallback } from "react";
-// import { UserType } from "@/types";
-// import { useFetchChildren } from "./useFetchChildren";
+  // Read--------------------------------
+  // reward1件読み込み
+  const fetchOneReward = async (
+    reward_id: string
+  ): Promise<RewardType | undefined> => {
+    try {
+      const res = await fetch(`/api/reward/${reward_id}`);
+      if (!res.ok) {
+        throw new Error(`rewardデータ取得失敗: ${res.status}`);
+      }
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("rewardユーザーのデータ取得エラー:", err);
+      return undefined;
+    }
+  };
 
-// // UPDATE--------------------------------
-// // ユーザー情報更新
-// // storeのデータ更新
+  // ADD--------------------------------
+  // reward追加
 
-// // 使い方
-// // const { updateChild } = useChildActions();
-// // updateChild(userid,{name:"",total_points:00}, ()=>{}}
-// // 更新するユーザーid（必須）
-// // 更新するデータ（一方でもOK）
-// // 終了後の処理
+  // 使い方
+  // const { addReward } = useRewardActions();
+  // addReward({ ...data, parent_id: parentData?.id || "" }, ()=>{}}
+  const addReward = async (newReward: RewardType, onSuccess?: () => void) => {
+    try {
+      const res = await fetch("/api/reward", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReward),
+      });
+      if (!res.ok) throw new Error("reward追加に失敗しました");
 
-// // 例
-// // selectedUser.id, { total_points: result }, () =>
-// //   modalRef.current?.close()
-// // );
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (err) {
+      console.error("追加エラー:", err);
+    }
+    triggerRefetch(); // 再取得トリガー
+  };
 
-// export function useRewardActions() {
-//   const router = useRouter();
-//   // const childList = useUserStore((state) => state.childList);
-//   // const setChildList = useUserStore((state) => state.setChildList);
+  // UPDATE--------------------------------
+  // reward の status 更新
+  const updateReward = async (
+    rewardId: string,
+    newReward: {
+      title?: string;
+      description?: string | null;
+      child_id?: string | null;
+      required_points?: number;
+      is_active?: boolean;
+    },
+    onSuccess?: () => void
+  ) => {
+    try {
+      const res = await fetch(`/api/reward/${rewardId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReward), // 渡されたプロパティのみ更新
+      });
+      if (!res.ok) throw new Error("更新に失敗しました");
 
-//   // 子ユーザーを更新（name だけ, total_points だけなどにも対応）
-//   const updateReward = useCallback(
-//     async (
-//       updates: {
-//         id: string;
-//         title?: string;
-//         description?: string;
-//         required_points?: number;
-//       },
-//       onSuccess?: () => void
-//     ) => {
-//       try {
-//         const response = await fetch(`/api/reward/${updates.id}`, {
-//           method: "PUT",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify(updates), // 渡されたプロパティのみ更新
-//         });
-//         if (!response.ok) throw new Error("更新に失敗しました");
+      triggerRefetch();
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.error("更新エラー:", err);
+    }
+  };
 
-//         const data = await response.json();
+  // DELETE--------------------------------
+  // reward の削除
+  const deleteReward = async (rewardId: string, onSuccess?: () => void) => {
+    if (!confirm("このリワードを削除しますか？")) return;
+    try {
+      const res = await fetch(`/api/reward/${rewardId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("削除に失敗しました");
 
-//         // // store情報を更新
-//         // const newChildList = childList.map((c) =>
-//         //   c.id === childId ? { ...c, ...data.child } : c
-//         // );
-//         // setChildList(newChildList);
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.error("削除エラー:", err);
+    }
+    triggerRefetch();
+  };
 
-//         if (onSuccess) onSuccess(); // 成功時の処理
-//       } catch (err) {
-//         console.error("更新エラー:", err);
-//       }
-//     },
-//     []
-//   );
-
-//   // // DELETE--------------------------------
-//   // // 子ユーザー情報削除
-//   // // storeのデータ削除
-
-//   // // 使い方
-//   // // const { deleteChild } = useChildActions();
-//   // // deleteChild(userid)
-
-//   // // 例
-//   // // selectedUser.id, { total_points: result }, () =>
-//   // //   modalRef.current?.close()
-//   // // );
-//   // const deleteChild = useCallback(
-//   //   async (childId: string) => {
-//   //     if (!confirm("この子ユーザーを削除しますか？")) return;
-//   //     try {
-//   //       const response = await fetch(`/api/child/${childId}`, {
-//   //         method: "DELETE",
-//   //       });
-//   //       if (!response.ok) throw new Error("削除に失敗しました");
-
-//   //       // store情報を更新
-//   //       const newChildList = childList.filter((c) => c.id !== childId);
-//   //       setChildList(newChildList);
-
-//   //       router.push("/main/parent"); // 削除後のリダイレクト
-//   //     } catch (err) {
-//   //       console.error("削除エラー:", err);
-//   //     }
-//   //   },
-//   //   [setChildList, router]
-//   // );
-
-//   // // ADD--------------------------------
-//   // // 子ユーザー追加
-//   // // storeのデータ更新
-
-//   // // 使い方
-//   // // const { addChild } = useChildActions();
-//   // // addChild({ ...data, parent_id: parentData?.id || "" }, ()=>{}}
-//   // // フォームの内容（name）
-//   // // parent_id
-//   // // 終了後の処理
-
-//   // // 例
-//   // // addChild({ ...data, parent_id: parentData?.id || "" }, () => {
-//   // //   modalRef.current?.close();
-//   // //   reset();
-//   // // });
-//   // const addChild = useCallback(
-//   //   async (newUser: { name: string }, onSuccess?: () => void) => {
-//   //     try {
-//   //       const res = await fetch("/api/child", {
-//   //         method: "POST",
-//   //         headers: { "Content-Type": "application/json" },
-//   //         body: JSON.stringify(newUser),
-//   //       });
-
-//   //       if (!res.ok) throw new Error("子ユーザー追加に失敗しました");
-
-//   //       const data = await res.json();
-
-//   //       // store情報を更新
-//   //       // useUserStore.getState().childList：Zustand の最新情報を取得
-//   //       const newChildList = [...useUserStore.getState().childList, data.child];
-//   //       setChildList(newChildList);
-
-//   //       if (onSuccess) {
-//   //         onSuccess();
-//   //       } // 成功時の処理
-//   //     } catch (err) {
-//   //       console.error("追加エラー:", err);
-//   //     }
-
-//   //     // try {
-//   //     //   const response = await fetch("/api/child", {
-//   //     //     method: "POST",
-//   //     //     headers: { "Content-Type": "application/json" },
-//   //     //     body: JSON.stringify(newUser), // 新しい子ユーザー情報
-//   //     //   });
-//   //     //   if (!response.ok) throw new Error("子ユーザー追加に失敗しました");
-//   //     //   alert(newUser);
-//   //     //   const data = await response.json();
-
-//   //     //   // store情報を更新
-//   //     //   // useUserStore.getState().childList：Zustand の最新情報を取得
-//   //     //   const newChildList = [...useUserStore.getState().childList, data.child];
-//   //     //   setChildList(newChildList);
-
-//   //     //   if (onSuccess) {
-//   //     //     onSuccess();
-//   //     //   } // 成功時の処理
-//   //     // } catch (err) {
-//   //     //   console.error("追加エラー:", err);
-//   //     // }
-//   //   },
-//   //   [setChildList]
-//   // );
-
-//   return { updateReward };
-// }
+  return {
+    addReward,
+    fetchRewards,
+    fetchOneReward,
+    updateReward,
+    deleteReward,
+    triggerRefetch,
+    refetchReward,
+  };
+}

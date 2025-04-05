@@ -41,16 +41,25 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
     setError("");
     setMessage("");
     updateTodo(todoId, data, () => {
+      setRefetchTodo(true);
       modalRef.current?.close();
       reset();
-      setRefetchTodo(true);
     });
   };
 
   const handleModal = async () => {
     const data = await fetchOneTodo(todoId);
     if (data) {
-      reset(data); // フォームに初期値を反映
+      const safeData: FormData = {
+        title: data.title ?? "",
+        points: data.points ?? 0,
+        is_recommended: data.is_recommended ?? false,
+        description: data.description ?? "",
+        status: data.status ?? "pending",
+        child_id: data.child_id ?? "",
+      };
+
+      reset(safeData); // フォームに初期値を反映
     }
     modalRef.current?.showModal();
   };
@@ -62,17 +71,31 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
       </button>
 
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box">
-          <form method="dialog">
+        <div className="modal-box relative">
+          <button
+            onClick={() => modalRef.current?.close()}
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          >
+            ✕
+          </button>
+          {/* <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-          </form>
+          </form> */}
 
           <h3 className="mb-4">Todo編集</h3>
 
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={(e) => {
+              e.preventDefault();
+              console.log("submitされてる！");
+              handleSubmit(onSubmit)(e);
+              console.log("バリデーションエラー:", errors);
+            }}
+            // }}>
+            //           <form
+            //             onSubmit={handleSubmit(onSubmit)}
             className="bg-base-200 border border-base-300 p-4 rounded-box"
           >
             <fieldset className="fieldset flex flex-col">

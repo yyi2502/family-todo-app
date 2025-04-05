@@ -1,102 +1,97 @@
+import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
 
-
-// export async function GET(
-//   req: Request,
-//   { params }: { params: { id: string } }
-// ) {
-//   const { id } = params;
-//   const supabase = await createClient();
-
-//   try {
-//     const { data, error } = await supabase
-//       .from("rewards")
-//       .select("*")
-//       .eq("id", id)
-//       .single();
-
-//     if (error) {
-//       return handleErrorResponse(error, "データ取得に失敗しました。");
-//     }
-
-//     if (!data) {
-//       return new Response(
-//         JSON.stringify({ error: "rewardsが見つかりません。" }),
-//         { status: 404 }
-//       );
-//     }
-
-//     return new Response(JSON.stringify(data), { status: 200 });
-//   } catch (error) {
-//     return handleErrorResponse(error, "サーバーエラーが発生しました。");
-//   }
-// }
-
-// rewards更新
-export async function PUT(
+/**
+ * READ
+ * reward id で1件取得
+ */
+//
+export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
-  const supabase = await createClient();
-
   try {
-    const requestData = await req.json();
-    const {
-      title,
-      description,
-      parent_id,
-      child_id,
-      required_points,
-      is_active,
-    } = requestData;
-
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("rewards")
-      .update({
-        title,
-        description,
-        parent_id,
-        child_id,
-        required_points,
-        is_active,
-      })
-      .eq("id", id);
+      .select("*")
+      .eq("id", params.id)
+      .single();
 
     if (error) {
-      return handleErrorResponse(error, "データ更新に失敗しました。");
+      return NextResponse.json({ error: error.message }, { status: 404 });
     }
 
-    return new Response(JSON.stringify(data), { status: 200 });
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    return handleErrorResponse(error, "サーバーエラーが発生しました。");
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }
 
-// rewards削除
+/**
+ * DELETE
+ * reward id で1件削除
+ */
+//
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
-  const supabase = await createClient();
-
   try {
-    // 指定された ID の rewards を削除
-    const { error } = await supabase.from("rewards").delete().eq("id", id);
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("rewards")
+      .delete()
+      .eq("id", params.id);
 
     if (error) {
-      return handleErrorResponse(error, "データ削除に失敗しました。");
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return new Response(
-      JSON.stringify({ message: "rewardsを削除しました。" }),
-      {
-        status: 200,
-      }
+    return NextResponse.json(
+      { message: "削除に成功しました" },
+      { status: 200 }
     );
   } catch (error) {
-    return handleErrorResponse(error, "サーバーエラーが発生しました。");
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+  }
+}
+
+/**
+ * UPDATE
+ * reward id で1件更新
+ */
+//
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = await createClient();
+    const body = await req.json();
+
+    const { data, error } = await supabase
+      .from("rewards")
+      .update(body)
+      .eq("id", params.id)
+      .select("*")
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }

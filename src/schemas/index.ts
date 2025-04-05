@@ -58,8 +58,8 @@ export const UpdateTodoSchema = z.object({
     .min(1, "タイトルは必須です")
     .transform((t) => t.trim()),
   description: z.string().optional(),
-  points: z.number().min(0).int(),
-  is_recommended: z.boolean(),
+  points: z.number().min(0).int().optional(),
+  is_recommended: z.boolean().optional(),
   child_id: z.string().optional(),
   status: z.enum(["pending", "processing", "completed"]),
 });

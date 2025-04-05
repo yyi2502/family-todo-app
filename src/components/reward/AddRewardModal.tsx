@@ -3,30 +3,31 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AddTodoSchema, UpdateTodoSchema } from "@/schemas";
+import { AddTodoSchema } from "@/schemas";
 import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
-import { Pencil, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTodoActions } from "@/hooks/useTodoActions";
 import { useTodoStore } from "@/stores/todoStore";
 
-type FormData = z.infer<typeof UpdateTodoSchema>;
+type FormData = z.infer<typeof AddTodoSchema>;
 
-export default function UpdateTodoModal({ todoId }: { todoId: string }) {
-  const { updateTodo } = useTodoActions();
+export default function AddRewardModal() {
+  const { addTodo } = useTodoActions();
   const parentData = useUserStore((state) => state.parentData);
   const setRefetchTodo = useTodoStore((state) => state.setRefetchTodo);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [newTitle, setNewTitle] = useState<string>("");
-  const [newPoints, setNewPoints] = useState<number>(0);
-  const [newDescription, setNewDescription] = useState<string>("");
-  const [newIsrecommended, setNewIsrecommended] = useState<boolean>();
-
-  const { fetchOneTodo } = useTodoActions();
+  const [isPending, startTransition] = useTransition();
   const modalRef = useRef<HTMLDialogElement | null>(null); // useRefでモーダル要素を取得
+
+  // ステータスの選択肢（子供向けの言い方）
+  const statusOptions = [
+    { value: "pending", label: "まだやらないよ！" },
+    { value: "processing", label: "今やってるよ！" },
+    { value: "completed", label: "できたよ！" },
+  ];
 
   const {
     register,
@@ -34,7 +35,7 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(UpdateTodoSchema),
+    resolver: zodResolver(AddTodoSchema),
     defaultValues: {
       points: 10,
       is_recommended: false,
@@ -45,33 +46,24 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log("onclick");
     setError("");
     setMessage("");
-    updateTodo(todoId, data, () => {
+    addTodo({ ...data, created_by: parentData?.id || "" }, () => {
       modalRef.current?.close();
       reset();
       setRefetchTodo(true);
     });
   };
 
-  const handleModal = async () => {
-    const data = await fetchOneTodo(todoId);
-    if (data) {
-      setNewTitle(data.title);
-      setNewPoints(data.points);
-      setNewDescription(data.description ?? "");
-      setNewIsrecommended(data.is_recommended);
-      console.log("reset");
-      // reset(data);
-    }
+  const handleModal = () => {
     modalRef.current?.showModal();
   };
 
   return (
     <>
-      <button className="btn btn-square btn-ghost" onClick={handleModal}>
-        <Pencil width={20} height={20} />
+      <button className="btn" onClick={handleModal}>
+        todo追加
+        <Plus width={20} height={20} />
       </button>
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
@@ -80,19 +72,18 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
               ✕
             </button>
           </form>
-          <h3 className="mb-4">Todo編集</h3>
+          <h3 className="mb-4">Todo追加</h3>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="bg-base-200 border border-base-300 p-4 rounded-box"
           >
-            <fieldset className="fieldset flex flex-col">
+            <fieldset className="fieldset">
               <label className="fieldset-label">タイトル</label>
               <input
                 type="text"
                 {...register("title")}
                 className="input w-full"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="ToDo のタイトル"
               />
               {errors.title && (
                 <p className="text-red-500 text-sm">{errors.title.message}</p>
@@ -103,8 +94,6 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
                 type="number"
                 {...register("points", { valueAsNumber: true })}
                 className="input w-full"
-                value={newPoints}
-                onChange={(e) => setNewPoints(Number(e.target.value))}
               />
               {errors.points && (
                 <p className="text-red-500 text-sm">{errors.points.message}</p>
@@ -129,8 +118,6 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
                 {...register("description")}
                 className="textarea w-full"
                 placeholder="ToDo の詳細な説明"
-                value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
               />
               {errors.description && (
                 <p className="text-red-500 text-sm">
@@ -145,8 +132,6 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
                   type="checkbox"
                   {...register("is_recommended")}
                   className="checkbox bg-white"
-                  checked={newIsrecommended}
-                  onChange={(e) => setNewIsrecommended(e.target.checked)}
                 />
                 おすすめに表示する
               </label>
@@ -168,7 +153,7 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
               )} */}
 
               <button type="submit" className="btn btn-neutral mt-4 w-full">
-                保存
+                {isPending ? "登録中..." : "追加"}
               </button>
             </fieldset>
           </form>

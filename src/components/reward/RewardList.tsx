@@ -1,167 +1,83 @@
 "use client";
 
-import { useUserStore } from "@/stores/userStore";
-import { RewardType, TodoType } from "@/types";
-import { Delete, Pencil } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useUserStore } from "@/stores/userStore";
+import { useRewardStore } from "@/stores/rewardStore";
+import { useTodoActions } from "@/hooks/useTodoActions";
+import { useChildActions } from "@/hooks/useChildActions";
+import { RewardPropsType, RewardType, TodoType } from "@/types";
+import { Delete, Star } from "lucide-react";
 import { NameDisplay } from "../user/NameDisplay";
-import { useParams } from "next/navigation";
-import UseRewardModal from "./UseRewardModal";
-import UpdateRewardModal from "./UpdateRewardModal";
+import UpdateRewardModal from "./___UpdateRewardModal";
 
-export default function RewardList() {
-  // const { id } = useParams();
+export default function RewardList({
+  child_id,
+  is_active,
+  required_points,
+}: RewardPropsType) {
   const selectedUser = useUserStore((state) => state.selectedUser);
-
+  const { refetchReward, setRefetchReward } = useRewardStore();
   const [rewards, setRewards] = useState<RewardType[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const { fetchTodos, updateTodo, deleteTodo } = useTodoActions();
+  const { updateChild } = useChildActions();
 
-  // const isSelf = selectedUser?.id === id;
-  // console.log("+++++++");
-  // console.log(isSelf);
+  // 初回ロード
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchRewards(child_id, is_active, required_points);
+        setRewards(data);
+      } catch (err) {
+        setError("rewardの取得に失敗しました");
+      }
+    };
+    fetchData(); // 初回ロードで必ず取得
+  }, []);
 
   // rewardリストを取得
   useEffect(() => {
-    const fetchReward = async () => {
+    const fetchData = async () => {
+      console.log("fetchRewards");
       try {
-        const response = await fetch(`/api/reward`);
-        const rewardData = await response.json();
-        if (response.ok) {
-          setRewards(rewardData.data);
-        } else {
-          setError(rewardData.error);
-        }
+        const data = await fetchRewards(child_id, is_active, required_points);
+        setRewards(data);
       } catch (err) {
-        setError("エラーが発生しました。");
+        setError("rewardの取得に失敗しました");
+      } finally {
+        setRefetchReward(false); // フェッチ完了後、フラグをリセット
       }
     };
+    if (refetchReward) {
+      fetchData();
+    }
+  }, [refetchReward, setRefetchReward]);
 
-    fetchReward();
-  }, []);
-
-  // useEffect(() => {
-  //   fetchRewards();
-  //   // }, [rewards]);
-  // }, []);
-
-  // const fetchRewards = async () => {
-  //   try {
-  //     const rewards = await fetchAllRewards(true);
-
-  //     try {
-  //       const url = new URL("/api/reward", window.location.origin);
-
-  //       const response = await fetch(url.toString());
-  //       const rewards = await response.json();
-  //       if (!response.ok) throw new Error(rewards.error);
-
-  //       return rewards;
-  //     } catch (err) {
-  //       console.error("rewardsの取得に失敗しました", err);
-  //       throw new Error("rewardsの取得に失敗しました");
-  //     }
-
-  //     setRewards(rewards);
-  //   } catch {
-  //     setError("ToDoの取得に失敗しました");
-  //   }
-  // };
-
-  // Reward更新
-  // const handleExchange = async (
-  //   rewardId: string
-  //   // newStatus: "pending" | "processing" | "completed",
-  //   // points?: number
+  // // status 更新
+  // const handleUpdateStatus = async (
+  //   todoId: string,
+  //   newStatus: "pending" | "processing" | "completed",
+  //   points?: number
   // ) => {
-  //   try {
-  //     const response = await fetch(`/api/rewards/${rewardId}`, {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({}),
-  //     });
+  //   if (selectedUser) {
+  //     const updatedData = {
+  //       status: newStatus,
+  //       child_id: newStatus === "pending" ? "" : selectedUser.id,
+  //     };
+  //     updateTodo(todoId, updatedData);
 
-  //     if (!response.ok) throw new Error("ステータス更新に失敗しました");
-
-  //     setRewards((prevRewards) =>
-  //       prevRewards.map((rewards) =>
-  //         rewards.id === rewardId ? { ...rewards } : rewards
-  //       )
-  //     );
-
-  //     // ToDo が完了した場合、total_point を更新
-  //     // if (newStatus === "completed" && points !== undefined) {
-  //     //   await updateTotalPoints(points);
-  //     // }
-  //   } catch (err) {
-  //     setError("ステータス更新に失敗しました~");
-  //     console.error(err);
-  //   }
-  // };
-  // total_point の更新
-  // const updateTotalPoints = async (todoPoints: number) => {
-  //   try {
-  //     const response = await fetch(`/api/user/${child_id}`, {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         points: todoPoints, // 加算するポイント数
-  //       }),
-  //     });
-
-  //     if (!response.ok) throw new Error("ポイントの更新に失敗しました");
-  //   } catch (err) {
-  //     setError("ポイントの更新に失敗しました");
-  //     console.error(err);
+  //     //ポイント更新
+  //     if (newStatus === "completed" && points) {
+  //       const newTotalPoints = selectedUser.total_points + points;
+  //       updateChild(selectedUser.id, { total_points: newTotalPoints });
+  //     }
   //   }
   // };
 
-  // Reward 交換
-  const handleExchange = async (rewardId: string) => {
-    try {
-      const response = await fetch(`/api/rewards/${rewardId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-
-      if (!response.ok) throw new Error("ステータス更新に失敗しました");
-
-      setRewards((prevRewards) =>
-        prevRewards.map((rewards) =>
-          rewards.id === rewardId ? { ...rewards } : rewards
-        )
-      );
-
-      // ToDo が完了した場合、total_point を更新
-      // if (newStatus === "completed" && points !== undefined) {
-      //   await updateTotalPoints(points);
-      // }
-    } catch (err) {
-      setError("ステータス更新に失敗しました~");
-      console.error(err);
-    }
-  };
-
-  // rewards の削除
-  const handleDelete = async (rewardId: string) => {
-    if (!confirm("このリワードを削除しますか？")) return;
-    try {
-      const response = await fetch(`/api/reward/${rewardId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("削除に失敗しました");
-
-      setRewards((prevRewards) =>
-        prevRewards.filter((reward) => reward.id !== rewardId)
-      );
-    } catch (err) {
-      setError("削除に失敗しました");
-      console.error(err);
-    }
+  // reward の削除
+  const handleDelete = async (e: React.MouseEvent, rewardId: string) => {
+    e.preventDefault();
+    deleteReward(rewardId);
   };
 
   return (
@@ -175,36 +91,96 @@ export default function RewardList() {
               className="list-row flex justify-between items-center"
             >
               <div>
+                {reward.is_active && (
+                  <div>
+                    <Star />
+                  </div>
+                )}
                 <div>{reward.title}</div>
-                <div>必要ポイント：{reward.required_points}</div>
+                <div>{reward.required_points}</div>
                 {reward.description && (
-                  <div className="text-sm">{reward.description}</div>
+                  <div className="text-xs uppercase font-semibold opacity-60">
+                    {reward.description}
+                  </div>
                 )}
               </div>
 
-              <div className="flex gap-2">
-                {selectedUser?.role === "child" ? (
+              <div className="flex gap-2 items-center">
+                {/* 子どもユーザー向けの表示 */}
+                {/* {selectedUser?.role === "child" ? (
                   <>
-                    {/* 子本人のみ 交換ボタン表示 */}
-                    <UseRewardModal reward={reward} />
-                  </>
-                ) : (
-                  <>
-                    {/* 親ユーザーのみ 編集・削除ボタン表示 */}
-                    <UpdateRewardModal reward={reward} />
-                    {/* <Link href={`/main/reward/${reward.id}`}>
-                      <button className="btn btn-square btn-ghost">
-                        <Pencil />
+                    {todo.status === "pending" && (
+                      <button
+                        className="btn btn-sm bg-blue-500 text-white"
+                        onClick={() =>
+                          handleUpdateStatus(todo.id, "processing")
+                        }
+                      >
+                        やる！
                       </button>
-                    </Link> */}
-                    <button
-                      className="btn btn-square btn-ghost"
-                      onClick={() => handleDelete(reward.id)}
-                    >
-                      <Delete />
-                    </button>
+                    )}
+
+                    {todo.status === "processing" ? (
+                      selectedUser.id === todo.child_id ? (
+                        <>
+                          <button
+                            className="btn btn-sm bg-green-500 text-white"
+                            onClick={() =>
+                              handleUpdateStatus(
+                                todo.id,
+                                "completed",
+                                todo.points
+                              )
+                            }
+                          >
+                            やった！
+                          </button>
+                          <button
+                            className="btn btn-sm bg-gray-500 text-white"
+                            onClick={() =>
+                              handleUpdateStatus(todo.id, "pending")
+                            }
+                          >
+                            やめる
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          <NameDisplay id={todo.child_id} />
+                          ：やっています
+                        </span>
+                      )
+                    ) : null}
+
+                    {todo.status === "completed" && (
+                      <span className="text-sm text-gray-500">
+                        <NameDisplay id={todo.child_id} />
+                        ：クリア済みだよ！
+                      </span>
+                    )}
                   </>
-                )}
+                ) : ( */}
+                <>
+                  {/* 親ユーザー向けの表示 */}
+                  {/* {todo.status !== "pending" && (
+                      <span className="text-sm text-gray-500">
+                        <NameDisplay id={todo.child_id} />：
+                        {todo.status === "processing"
+                          ? "やっています"
+                          : "クリア済み"}
+                      </span>
+                    )} */}
+
+                  {/* 編集・削除ボタン */}
+                  {/* <UpdateRewardModal rewardId={reward.id} /> */}
+                  <button
+                    className="btn btn-square btn-ghost"
+                    onClick={(e) => handleDelete(e, reward.id)}
+                  >
+                    <Delete />
+                  </button>
+                </>
+                {/* )} */}
               </div>
             </li>
           ))}

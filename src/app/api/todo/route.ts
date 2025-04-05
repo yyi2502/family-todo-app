@@ -27,7 +27,6 @@ export async function GET(req: Request) {
 
     if (child_id) {
       query = query.eq("child_id", child_id);
-      // query = query.neq("status", "completed");
     }
 
     // is_recommendedでのフィルタリング
@@ -45,7 +44,10 @@ export async function GET(req: Request) {
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }
 
@@ -81,6 +83,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data, { status: 201 }); // 作成成功
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }

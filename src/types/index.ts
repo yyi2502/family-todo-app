@@ -1,3 +1,4 @@
+// user
 export type UserType = {
   id: string;
   name: string;
@@ -10,6 +11,7 @@ export type UserType = {
   role: "parent" | "child";
 };
 
+// todo
 export type TodoType = {
   id: string;
   created_by: string;
@@ -29,6 +31,28 @@ export type TodoPropsType = {
   child_id?: string;
 };
 
+export type AddTodoPropsType = {
+  title: string;
+  created_by: string;
+  points: number;
+  description?: string;
+  is_recommended: boolean;
+};
+
+export type UpdateTodoPropsType = {
+  title?: string;
+  description?: string;
+  points?: number;
+  status: "pending" | "processing" | "completed";
+  child_id?: string;
+};
+
+export type TodoStoreType = {
+  refetchTodo: boolean;
+  setRefetchTodo: (value: boolean) => void;
+};
+
+// reward
 export type RewardType = {
   id: string;
   title: string;
@@ -39,8 +63,13 @@ export type RewardType = {
   is_active: boolean;
 };
 
+export type RewardPropsType = {
+  child_id?: string;
+  required_points?: number;
+  is_active?: boolean;
+};
 
-
-export type AddTodoFormProps = {
-  
-}
+export type RewardStoreType = {
+  refetchReward: boolean;
+  setRefetchReward: (value: boolean) => void;
+};

@@ -1,12 +1,9 @@
 "use client";
 
 import { create } from "zustand";
-type todoStoreType = {
-  refetchTodo: boolean;
-  setRefetchTodo: (value: boolean) => void;
-};
+import { TodoStoreType } from "@/types";
 
-export const useTodoStore = create<todoStoreType>((set) => ({
+export const useTodoStore = create<TodoStoreType>((set) => ({
   refetchTodo: false,
   setRefetchTodo: (value) => set({ refetchTodo: value }),
 }));

@@ -1,7 +1,12 @@
 "use client";
 
 import { useTodoStore } from "@/stores/todoStore";
-import { TodoType } from "@/types";
+import {
+  AddTodoPropsType,
+  TodoPropsType,
+  TodoType,
+  UpdateTodoPropsType,
+} from "@/types";
 
 export function useTodoActions() {
   const { refetchTodo, setRefetchTodo } = useTodoStore();
@@ -62,16 +67,7 @@ export function useTodoActions() {
   // 使い方
   // const { addTodo } = useTodoActions();
   // addTodo({ ...data, parent_id: parentData?.id || "" }, ()=>{}}
-  const addTodo = async (
-    newTodo: {
-      title: string;
-      created_by: string;
-      points: number;
-      description?: string;
-      is_recommended: boolean;
-    },
-    onSuccess?: () => void
-  ) => {
+  const addTodo = async (newTodo: AddTodoPropsType, onSuccess?: () => void) => {
     try {
       const res = await fetch("/api/todo", {
         method: "POST",
@@ -94,13 +90,7 @@ export function useTodoActions() {
   // ToDo の status 更新
   const updateTodo = async (
     todoId: string,
-    newTodo: {
-      title?: string;
-      description?: string;
-      points?: number;
-      status: "pending" | "processing" | "completed";
-      child_id?: string;
-    },
+    newTodo: UpdateTodoPropsType,
     onSuccess?: () => void
   ) => {
     try {
@@ -117,15 +107,6 @@ export function useTodoActions() {
       console.error("更新エラー:", err);
     }
   };
-
-  //     if (newStatus === "completed" && points !== undefined) {
-  //       await updateTotalPoints(child_id!, points);
-  //     }
-  //   } catch (err) {
-  //     setError("ステータス更新に失敗しました");
-  //     console.error(err);
-  //   }
-  // };
 
   // DELETE--------------------------------
   // ToDo の削除
