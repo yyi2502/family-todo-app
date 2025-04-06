@@ -6,9 +6,9 @@ import { createClient } from "@/utils/supabase/server";
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await ctx.params;
   const { name, total_points } = await req.json();
 
   // users テーブルの name と total_point を更新
@@ -29,9 +29,9 @@ export async function PUT(
 // 子ユーザーを削除
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   // users テーブルから子ユーザー削除
   const supabase = await createClient();

@@ -3,25 +3,18 @@
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useRewardStore } from "@/stores/rewardStore";
-import { useChildActions } from "@/hooks/useChildActions";
 import { RewardPropsType, RewardType } from "@/types";
 import { Delete, Star } from "lucide-react";
-import { NameDisplay } from "../user/NameDisplay";
 import { useRewardActions } from "@/hooks/useRewardActions";
 import ExchangeRewardModal from "./ExchangeRewardModal";
 import UpdateRewardModal from "./UpdateRewardModal";
 
-export default function RewardList({
-  child_id,
-  is_active,
-  required_points,
-}: RewardPropsType) {
+export default function RewardList({ child_id, is_active }: RewardPropsType) {
   const selectedUser = useUserStore((state) => state.selectedUser);
   const { refetchReward, setRefetchReward } = useRewardStore();
   const [rewards, setRewards] = useState<RewardType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { fetchRewards, deleteReward } = useRewardActions();
-  const { updateChild } = useChildActions();
 
   // 初回ロード
   useEffect(() => {
@@ -30,11 +23,12 @@ export default function RewardList({
         const data = await fetchRewards({ child_id, is_active });
         setRewards(data);
       } catch (err) {
+        console.error(err);
         setError("rewardの取得に失敗しました");
       }
     };
     fetchData(); // 初回ロードで必ず取得
-  }, []);
+  }, [child_id, fetchRewards, is_active]);
 
   // rewardリストを取得
   useEffect(() => {
@@ -44,6 +38,7 @@ export default function RewardList({
         const data = await fetchRewards({ child_id, is_active });
         setRewards(data);
       } catch (err) {
+        console.error(err);
         setError("rewardの取得に失敗しました");
       } finally {
         setRefetchReward(false); // フェッチ完了後、フラグをリセット
@@ -52,7 +47,7 @@ export default function RewardList({
     if (refetchReward) {
       fetchData();
     }
-  }, [refetchReward, setRefetchReward]);
+  }, [refetchReward, setRefetchReward, child_id, fetchRewards, is_active]);
 
   // reward の削除
   const handleDelete = async (e: React.MouseEvent, rewardId: string) => {

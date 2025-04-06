@@ -30,11 +30,12 @@ export default function TodoList({
         const data = await fetchTodos(child_id, is_recommended, status);
         setTodos(data);
       } catch (err) {
+        console.error(err);
         setError("ToDoの取得に失敗しました");
       }
     };
     fetchData(); // 初回ロードで必ず取得
-  }, []);
+  }, [status, is_recommended, fetchTodos, child_id]);
 
   // todoリストを取得
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function TodoList({
         const data = await fetchTodos(child_id, is_recommended, status);
         setTodos(data);
       } catch (err) {
+        console.error(err);
         setError("ToDoの取得に失敗しました");
       } finally {
         setRefetchTodo(false); // フェッチ完了後、フラグをリセット
@@ -52,7 +54,14 @@ export default function TodoList({
     if (refetchTodo) {
       fetchData();
     }
-  }, [refetchTodo, setRefetchTodo]);
+  }, [
+    refetchTodo,
+    setRefetchTodo,
+    status,
+    is_recommended,
+    fetchTodos,
+    child_id,
+  ]);
 
   // status 更新
   const handleUpdateStatus = async (

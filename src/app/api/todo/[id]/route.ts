@@ -6,14 +6,17 @@ import { createClient } from "@/utils/supabase/server";
  * todo id で1件取得
  */
 //
-export async function GET(req: Request, context: { params: { id: string } }) {
-  const { params } = context;
+export async function GET(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> }
+) {
+  const { id } = await ctx.params;
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("todos")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", id)
       .single();
 
     if (error) {
@@ -36,11 +39,12 @@ export async function GET(req: Request, context: { params: { id: string } }) {
 //
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await ctx.params;
     const supabase = await createClient();
-    const { error } = await supabase.from("todos").delete().eq("id", params.id);
+    const { error } = await supabase.from("todos").delete().eq("id", id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
@@ -65,16 +69,17 @@ export async function DELETE(
 //
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await ctx.params;
     const supabase = await createClient();
     const body = await req.json();
 
     const { data, error } = await supabase
       .from("todos")
       .update(body)
-      .eq("id", params.id)
+      .eq("id", id)
       .select("*")
       .single();
 

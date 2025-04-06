@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AddRewardSchema } from "@/schemas";
-import { useState, useTransition, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { Plus } from "lucide-react";
 import { useRewardActions } from "@/hooks/useRewardActions";
@@ -18,7 +18,6 @@ export default function AddRewardModal() {
   const setRefetchReward = useRewardStore((state) => state.setRefetchReward);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [isPending, startTransition] = useTransition();
   const modalRef = useRef<HTMLDialogElement | null>(null); // useRefでモーダル要素を取得
 
   const {
@@ -123,7 +122,7 @@ export default function AddRewardModal() {
               </label>
 
               <button type="submit" className="btn btn-neutral mt-4 w-full">
-                {isPending ? "登録中..." : "追加"}
+                追加
               </button>
             </fieldset>
           </form>

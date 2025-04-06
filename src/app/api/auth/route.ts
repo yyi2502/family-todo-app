@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       const authName = authUser.user_metadata?.name || "ゲスト";
 
       // usersテーブルに親ユーザーが存在するかチェック
-      const { data: userData, error: userError } = await supabase
+      const { data: userData } = await supabase
         .from("users")
         .select("id")
         .eq("id", authId)

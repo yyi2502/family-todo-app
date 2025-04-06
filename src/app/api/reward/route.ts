@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     const supabase = await createClient();
     const { searchParams } = new URL(req.url);
     const child_id = searchParams.get("child_id");
-    const is_active = searchParams.get("is_active");
+    // const is_active = searchParams.get("is_active");
 
     let query = supabase.from("rewards").select("*");
 

@@ -1,13 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/stores/userStore";
-import { useCallback } from "react";
 import { useFetchChildren } from "./useFetchChildren";
 
 export function useChildActions() {
   const router = useRouter();
-  const setChildList = useUserStore((state) => state.setChildList);
   const { fetchChildren } = useFetchChildren();
 
   // UPDATE--------------------------------

@@ -4,10 +4,8 @@ import { useUserStore } from "@/stores/userStore";
 import { UserType } from "@/types";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
 
 export default function ChildList() {
-  // const childList = useUserStore((state) => state.childList);
   const childList = useUserStore((state) => state.childList || []);
   const selectedUser = useUserStore((state) => state.selectedUser);
   return (

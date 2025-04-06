@@ -5,7 +5,7 @@ import { useUserStore } from "@/stores/userStore";
 import { createClient } from "@/utils/supabase/client";
 
 const useFetchUserData = () => {
-  const { fetchParentData, fetchChildrenData, parentData } = useUserStore();
+  const { fetchParentData, fetchChildrenData } = useUserStore();
   const [loading, setLoading] = useState(true); // データ取得中の状態を管理
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const useFetchUserData = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [fetchChildrenData, fetchParentData]);
 
   return { loading }; // loading状態を返す
 };

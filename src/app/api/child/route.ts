@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 /**
  * 子ユーザー情報 取得
  */
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();

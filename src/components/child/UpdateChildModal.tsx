@@ -7,7 +7,7 @@ import { useChildActions } from "@/hooks/useChildActions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { UpdateChildSchema } from "@/schemas";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { UserType } from "@/types";
 
 type FormData = z.infer<typeof UpdateChildSchema>;

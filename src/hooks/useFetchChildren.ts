@@ -29,7 +29,7 @@ export function useFetchChildren() {
     } catch (err) {
       console.error("子ユーザーのデータ取得エラー:", err);
     }
-  }, [setChildList]);
+  }, [setChildList, setSelectedUser, selectUserId]);
 
   return { fetchChildren };
 }

@@ -2,6 +2,7 @@
 
 import { useRewardStore } from "@/stores/rewardStore";
 import { AddRewardPropsType, RewardPropsType, RewardType } from "@/types";
+import { useCallback } from "react";
 
 export function useRewardActions() {
   const { refetchReward, setRefetchReward } = useRewardStore();
@@ -14,24 +15,27 @@ export function useRewardActions() {
   // rewards 読み込み
   // ・全件
   // ・条件あり
-  const fetchRewards = async ({ child_id, is_active }: RewardPropsType) => {
-    try {
-      const url = new URL("/api/reward", window.location.origin);
+  const fetchRewards = useCallback(
+    async ({ child_id, is_active }: RewardPropsType) => {
+      try {
+        const url = new URL("/api/reward", window.location.origin);
 
-      if (child_id) url.searchParams.append("child_id", child_id);
-      if (is_active !== undefined)
-        url.searchParams.append("is_active", String(is_active));
+        if (child_id) url.searchParams.append("child_id", child_id);
+        if (is_active !== undefined)
+          url.searchParams.append("is_active", String(is_active));
 
-      const response = await fetch(url.toString());
-      const rewards = await response.json();
-      if (!response.ok) throw new Error(rewards.error);
+        const response = await fetch(url.toString());
+        const rewards = await response.json();
+        if (!response.ok) throw new Error(rewards.error);
 
-      return rewards;
-    } catch (err) {
-      console.error("rewardの取得に失敗しました", err);
-      throw new Error("rewardの取得に失敗しました");
-    }
-  };
+        return rewards;
+      } catch (err) {
+        console.error("rewardの取得に失敗しました", err);
+        throw new Error("rewardの取得に失敗しました");
+      }
+    },
+    [] // 依存関係に refetchReward を入れても OK（使う場合のみ）
+  );
 
   // Read--------------------------------
   // reward1件読み込み

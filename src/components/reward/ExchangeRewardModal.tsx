@@ -1,13 +1,8 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { AddRewardSchema } from "@/schemas";
-import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useUserStore } from "@/stores/userStore";
-import { Medal, Plus, ThumbsUp } from "lucide-react";
+import { Medal, ThumbsUp } from "lucide-react";
 import { RewardType } from "@/types";
 import { useChildActions } from "@/hooks/useChildActions";
 import { NameDisplay } from "../user/NameDisplay";
@@ -22,7 +17,6 @@ export default function ExchangeRewardModal({
 }: ExchangeRewardPropsType) {
   const { updateChild } = useChildActions();
   const selectedUser = useUserStore((state) => state.selectedUser);
-  const setSelectedUser = useUserStore((state) => state.setSelectedUser);
   // 所有ポイントがリワードポイントよりも少なくないかチェック
   const isDisable = reward.required_points >= (selectedUser?.total_points || 0);
 

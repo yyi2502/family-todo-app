@@ -2,7 +2,6 @@
 import { useUserStore } from "@/stores/userStore";
 import { useParams } from "next/navigation";
 import ChildInfo from "@/components/child/ChildInfo";
-import RewardList from "@/components/reward/RewardList";
 import TodoList from "@/components/todo/TodoList";
 
 export default function ChildDetailPage() {
