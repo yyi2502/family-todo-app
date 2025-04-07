@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useUserStore } from "@/stores/userStore";
-import { Medal, ThumbsUp } from "lucide-react";
+import { ThumbsUp } from "lucide-react";
 import { RewardType } from "@/types";
 import { useChildActions } from "@/hooks/useChildActions";
 import { NameDisplay } from "../user/NameDisplay";
@@ -46,38 +46,47 @@ export default function ExchangeRewardModal({
 
   return (
     <>
-      <button className="btn" onClick={handleModal} disabled={isDisable}>
+      <button
+        className="btn btn-accent btn-lg"
+        onClick={handleModal}
+        disabled={isDisable}
+      >
         こうかん
-        <Medal width={20} height={20} />
       </button>
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box">
+        <div className="modal-box text-center bg-amber-100">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
           </form>
-          <p>おとなのひとに みせてね</p>
-          <p className="text-3xl">{reward.title}</p>
-          <p className="text-3xl">{reward.required_points}ポイント</p>
+          <p className="underline">おとなのひとに みせてね</p>
+          <p className="text-3xl mt-10">{reward.title}</p>
+          <p className="text-3xl mt-2">
+            <span className="underline">{reward.required_points}</span>ポイント
+          </p>
 
-          <p className="text-2xl">
+          <p className="flex justify-center mt-7">
+            <button
+              className="btn btn-accent btn-xl flex items-center align-middle"
+              onClick={() => handleCalcPoints()}
+            >
+              <ThumbsUp />
+              <span className="">ポイントをつかいます！</span>
+            </button>
+          </p>
+
+          <p className="text-xl text-center mt-7">
             {selectedUser && (
               <>
                 <NameDisplay id={selectedUser.id} />
-                ：のこり
-                <span className="text-3xl">{selectedUser.total_points}</span>
-                ポイント
+                さんのポイント：
+                <span className="text-3xl underline">
+                  {selectedUser.total_points}
+                </span>
               </>
             )}
           </p>
-          <button
-            className="btn btn-active flex items-center align-middle"
-            onClick={() => handleCalcPoints()}
-          >
-            <ThumbsUp />
-            <span className="text-lg">ポイントをつかいます！</span>
-          </button>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>

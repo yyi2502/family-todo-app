@@ -8,8 +8,11 @@ export default function TodoPage() {
   const selectedUser = useUserStore((state) => state.selectedUser);
   return (
     <>
+      <h2 className="text-center text-3xl mb-8">やることリスト</h2>
       {selectedUser?.role === "parent" && <AddTodoModal />}
-      <TodoList />
+      <div className="mt-4">
+        <TodoList />
+      </div>
     </>
   );
 }

@@ -123,17 +123,17 @@ export default function UpdateRewardModal({ rewardId }: { rewardId: string }) {
               )}
 
               {/* 繰り返しチェックボックス */}
-              <label className="fieldset-label mt-4">
+              {/* <label className="fieldset-label mt-4">
                 <input
                   type="checkbox"
                   {...register("is_active")}
                   className="checkbox bg-white"
                 />
                 繰り返す（景品交換後も同じ景品が追加されます）
-              </label>
+              </label> */}
 
-              <button type="submit" className="btn btn-neutral mt-4 w-full">
-                保存
+              <button type="submit" className="btn btn-info mt-4 w-full">
+                リワード保存
               </button>
             </fieldset>
           </form>

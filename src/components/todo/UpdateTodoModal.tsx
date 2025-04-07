@@ -79,7 +79,7 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
             ✕
           </button>
 
-          <h3 className="mb-4">Todo編集</h3>
+          <h3 className="mb-4">やること編集</h3>
 
           <form
             onSubmit={(e) => {
@@ -116,7 +116,7 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
               <textarea
                 {...register("description")}
                 className="textarea w-full"
-                placeholder="ToDo の詳細な説明"
+                placeholder="やることの説明（任意）"
               />
               {errors.description && (
                 <p className="text-red-500 text-sm">
@@ -134,8 +134,8 @@ export default function UpdateTodoModal({ todoId }: { todoId: string }) {
                 おすすめに表示する
               </label>
 
-              <button type="submit" className="btn btn-neutral mt-4 w-full">
-                保存
+              <button type="submit" className="btn btn-info mt-4 w-full">
+                やること保存
               </button>
             </fieldset>
           </form>

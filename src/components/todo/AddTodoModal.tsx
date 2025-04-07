@@ -52,8 +52,8 @@ export default function AddTodoModal() {
 
   return (
     <>
-      <button className="btn" onClick={handleModal}>
-        todo追加
+      <button className="btn btn-info" onClick={handleModal}>
+        やること追加
         <Plus width={20} height={20} />
       </button>
       <dialog ref={modalRef} className="modal">
@@ -63,7 +63,7 @@ export default function AddTodoModal() {
               ✕
             </button>
           </form>
-          <h3 className="mb-4">Todo追加</h3>
+          <h3 className="mb-4">やること追加</h3>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="bg-base-200 border border-base-300 p-4 rounded-box"
@@ -74,7 +74,7 @@ export default function AddTodoModal() {
                 type="text"
                 {...register("title")}
                 className="input w-full"
-                placeholder="ToDo のタイトル"
+                placeholder="お風呂掃除"
               />
               {errors.title && (
                 <p className="text-red-500 text-sm">{errors.title.message}</p>
@@ -95,7 +95,7 @@ export default function AddTodoModal() {
               <textarea
                 {...register("description")}
                 className="textarea w-full"
-                placeholder="ToDo の詳細な説明"
+                placeholder="やることの説明（任意）"
               />
               {errors.description && (
                 <p className="text-red-500 text-sm">
@@ -113,8 +113,8 @@ export default function AddTodoModal() {
                 おすすめに表示する
               </label>
 
-              <button type="submit" className="btn btn-neutral mt-4 w-full">
-                追加
+              <button type="submit" className="btn btn-info mt-4 w-full">
+                やること追加
               </button>
             </fieldset>
           </form>

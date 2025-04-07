@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       // すでに登録済みならスキップ
       if (userData) {
         return NextResponse.json(
-          { message: "ユーザーは既に登録されています" },
+          { message: "ログイン中です" },
           { status: 200 }
         );
       }

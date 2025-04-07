@@ -58,7 +58,7 @@ export default function AddRewardModal() {
 
   return (
     <>
-      <button className="btn" onClick={handleModal}>
+      <button className="btn btn-info" onClick={handleModal}>
         リワード追加
         <Plus width={20} height={20} />
       </button>
@@ -103,7 +103,7 @@ export default function AddRewardModal() {
               <textarea
                 {...register("description")}
                 className="textarea w-full"
-                placeholder="リワード の詳細な説明"
+                placeholder="リワードの説明"
               />
               {errors.description && (
                 <p className="text-red-500 text-sm">
@@ -112,17 +112,17 @@ export default function AddRewardModal() {
               )}
 
               {/* 繰り返しチェックボックス */}
-              <label className="fieldset-label mt-4">
+              {/* <label className="fieldset-label mt-4">
                 <input
                   type="checkbox"
                   {...register("is_active")}
                   className="checkbox bg-white"
                 />
                 繰り返す（景品交換後も同じ景品が追加されます）
-              </label>
+              </label> */}
 
-              <button type="submit" className="btn btn-neutral mt-4 w-full">
-                追加
+              <button type="submit" className="btn btn-info mt-4 w-full">
+                リワード追加
               </button>
             </fieldset>
           </form>

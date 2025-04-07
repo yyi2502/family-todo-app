@@ -71,7 +71,11 @@ export default function Header() {
 
         <div className="drawer-content flex flex-col">
           {/* Navbar */}
-          <div className="navbar bg-base-300 w-full justify-between">
+          <div
+            className={`navbar bg-base-300 w-full justify-between ${
+              selectedUser?.role === "child" ? "bg-info" : ""
+            }`}
+          >
             <div className="mx-2 px-2 flex gap-5 items-center">
               {selectedUser ? (
                 selectedUser.role === "child" ? (
@@ -82,7 +86,9 @@ export default function Header() {
                     onClick={() => setIsDrawerOpen(false)}
                   >
                     <Star width={22} height={22} className="text-yellow-500" />
-                    <p>{selectedUser.name}</p>
+                    <p className="border-amber-300 border-b-2">
+                      {selectedUser.name}
+                    </p>
                   </Link>
                 ) : (
                   // selectedUser が "child" でない場合
@@ -97,8 +103,13 @@ export default function Header() {
                 )
               ) : // selectedUser が存在しない場合
               null}
-              <Link href={`/main/`} onClick={() => setIsDrawerOpen(false)}>
+              <Link
+                href={`/main/`}
+                onClick={() => setIsDrawerOpen(false)}
+                className="flex items-center gap-1.5 hover:opacity-50"
+              >
                 <RefreshCw width={20} height={20} />
+                <span className="text-xs">きりかえ</span>
               </Link>
             </div>
             {selectedUser?.role === "parent" && (
@@ -132,9 +143,9 @@ export default function Header() {
               <SquareX />
             </button>
             <ul className="menu bg-base-200 min-h-full w-80 p-4">
-              <li>おとな：{parentData?.name}さん</li>
+              <li className="mb-2">おとな：{parentData?.name}さん</li>
               <li>
-                子ユーザー
+                こどもユーザー
                 <ChildList />
               </li>
               <li>

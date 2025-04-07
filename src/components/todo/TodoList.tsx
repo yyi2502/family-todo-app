@@ -90,99 +90,112 @@ export default function TodoList({
     deleteTodo(todoId);
   };
 
+  // ステータスとおすすめフラグに応じてカードのスタイルを決定
+  const getCardClass = (todo: TodoType): string => {
+    // 完了済み：グレー
+    if (todo.status === "completed") {
+      return "card shadow-sm bg-base-300 text-base-300-content";
+    }
+
+    // おすすめ＆未着手：黄色
+    if (todo.status === "pending" && todo.is_recommended) {
+      return "card shadow-sm bg-warning";
+    }
+
+    // 選択ユーザー＆進行中：青緑
+    // 親ユーザー＆進行中：青緑
+    if (
+      todo.status === "processing" &&
+      (selectedUser?.id === todo.child_id || selectedUser?.role === "parent")
+    ) {
+      return "card shadow-sm bg-accent	 text-accent-content";
+    }
+
+    // デフォルト
+    return "card shadow-sm bg-base-100 text-base-100-content";
+  };
+
   return (
-    <div className="list bg-base-100 rounded-box shadow-md">
-      {error && <p className="text-red-500">{error}</p>}
-      {todos.length > 0 ? (
-        <ul>
-          {todos.map((todo) => (
-            <li
-              key={todo.id}
-              className="list-row flex justify-between items-center"
-            >
-              <div>
-                {todo.is_recommended && (
-                  <div>
-                    <Star />
-                  </div>
-                )}
-                <div>{todo.title}</div>
-                <div>{todo.points}</div>
-                {todo.description && (
-                  <div className="text-xs uppercase font-semibold opacity-60">
-                    {todo.description}
-                  </div>
-                )}
-              </div>
+    <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {todos.map((todo) => (
+        <li key={todo.id}>
+          <div className={getCardClass(todo)}>
+            <div className="card-body">
+              <h2 className="card-title flex items-center gap-2">
+                {todo.is_recommended && <Star width={15} height={15} />}
+                {todo.title}
+              </h2>
 
-              <div className="flex gap-2 items-center">
-                {/* 子どもユーザー向けの表示 */}
-                {selectedUser?.role === "child" ? (
-                  <>
-                    {todo.status === "pending" && (
-                      <button
-                        className="btn btn-sm bg-blue-500 text-white"
-                        onClick={() =>
-                          handleUpdateStatus(todo.id, "processing")
-                        }
-                      >
-                        やる！
-                      </button>
-                    )}
+              <p className="text-sm">{todo.points}ポイント</p>
 
-                    {todo.status === "processing" ? (
-                      selectedUser.id === todo.child_id ? (
-                        <>
-                          <button
-                            className="btn btn-sm bg-green-500 text-white"
-                            onClick={() => {
-                              handleUpdateStatus(
-                                todo.id,
-                                "completed",
-                                todo.points
-                              );
-                              runConfetti(); //紙吹雪
-                            }}
-                          >
-                            やった！
-                          </button>
-                          <button
-                            className="btn btn-sm bg-gray-500 text-white"
-                            onClick={() =>
-                              handleUpdateStatus(todo.id, "pending")
-                            }
-                          >
-                            やめる
-                          </button>
-                        </>
-                      ) : (
-                        <span className="text-sm text-gray-500">
-                          <NameDisplay id={todo.child_id} />
-                          ：やっています
-                        </span>
-                      )
-                    ) : null}
+              {todo.description && (
+                <p className="text-xs uppercase opacity-60">
+                  {todo.description}
+                </p>
+              )}
 
-                    {todo.status === "completed" && (
-                      <span className="text-sm text-gray-500">
+              {/* 子どもユーザー向けの表示 */}
+              {selectedUser?.role === "child" ? (
+                <div className="justify-end card-actions flex flex-wrap gap-2 items-center mt-2">
+                  {todo.status === "pending" && (
+                    <button
+                      className="btn btn-success btn-sm"
+                      onClick={() => handleUpdateStatus(todo.id, "processing")}
+                    >
+                      やる！
+                    </button>
+                  )}
+
+                  {todo.status === "processing" ? (
+                    selectedUser.id === todo.child_id ? (
+                      <>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            handleUpdateStatus(
+                              todo.id,
+                              "completed",
+                              todo.points
+                            );
+                            runConfetti();
+                          }}
+                        >
+                          やった！
+                        </button>
+                        <button
+                          className="btn btn-soft btn-sm"
+                          onClick={() => handleUpdateStatus(todo.id, "pending")}
+                        >
+                          やめる
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-xs underline text-gray-500">
                         <NameDisplay id={todo.child_id} />
-                        ：クリア済みだよ！
+                        がやってるよ
                       </span>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {/* 親ユーザー向けの表示 */}
-                    {todo.status !== "pending" && (
-                      <span className="text-sm text-gray-500">
-                        <NameDisplay id={todo.child_id} />：
-                        {todo.status === "processing"
-                          ? "やっています"
-                          : "クリア済み"}
-                      </span>
-                    )}
+                    )
+                  ) : null}
 
-                    {/* 編集・削除ボタン */}
+                  {todo.status === "completed" && (
+                    <span className="text-xs underline text-gray-500">
+                      <NameDisplay id={todo.child_id} />
+                      がクリア！
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="card-actions mt-2 flex justify-end">
+                  {/* 親ユーザー向けの表示 */}
+                  {todo.status !== "pending" && (
+                    <p className="text-xs w-full underline text-gray-500 text-right">
+                      <NameDisplay id={todo.child_id} />が
+                      {todo.status === "processing" ? "やってるよ" : "クリア！"}
+                    </p>
+                  )}
+
+                  {/* 編集・削除ボタン */}
+                  <div className="">
                     <UpdateTodoModal todoId={todo.id} />
                     <button
                       className="btn btn-square btn-ghost"
@@ -190,15 +203,13 @@ export default function TodoList({
                     >
                       <Delete />
                     </button>
-                  </>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-500">ありません</p>
-      )}
-    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
