@@ -41,8 +41,8 @@ export default function AddChildModal() {
 
   return (
     <>
-      <button className="btn" onClick={handleModal}>
-        子どもユーザー追加
+      <button className="btn btn-info" onClick={handleModal}>
+        こどもユーザー追加
         <Plus width={20} height={20} />
       </button>
       <dialog ref={modalRef} className="modal">

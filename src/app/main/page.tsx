@@ -44,9 +44,14 @@ export default function Home() {
               <Star width={20} height={20} />
             </span>
           )}
-          <button className="btn btn-warning" onClick={handleParentClick}>
-            {parentData?.name}さん（親ユーザー）
-          </button>
+          <div
+            className="avatar avatar-placeholder hover:opacity-50 hover:cursor-pointer"
+            onClick={handleParentClick}
+          >
+            <div className="bg-neutral text-neutral-content w-24 rounded-full">
+              <span className="text-3xl">{parentData?.name}</span>
+            </div>
+          </div>
         </div>
       </div>
       <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full place-items-center">
@@ -57,12 +62,14 @@ export default function Home() {
                 <Star width={20} height={20} />
               </span>
             )}
-            <button
+            <div
+              className="avatar avatar-placeholder hover:opacity-50 hover:cursor-pointer"
               onClick={() => handleChildClick(child.id)}
-              className="btn btn-success"
             >
-              {child.name}
-            </button>
+              <div className="bg-info text-info-content w-24 rounded-full">
+                <span className="text-3xl">{child.name}</span>
+              </div>
+            </div>
           </div>
         ))}
       </div>

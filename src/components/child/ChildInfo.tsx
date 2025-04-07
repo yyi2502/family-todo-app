@@ -21,18 +21,34 @@ export default function ChildInfo({ childId }: { childId: string }) {
 
   return (
     <div className="bg-white shadow-md p-4 rounded">
-      <div>
-        <h2 className="text-xl font-bold">{child.name}</h2>
-        <p>ポイント: {child.total_points}</p>
+      <div className="flex gap-3 items-center">
+        <div className="avatar avatar-placeholder">
+          <div className="bg-neutral text-neutral-content w-24 rounded-full">
+            <span className="text-3xl">{child.name}</span>
+          </div>
+        </div>
+        <div>
+          <p>
+            <span className="text-2xl">{child.total_points}</span>ポイント
+          </p>
+          <div className="mt-2">
+            <p className="text-sm">
+              1000ポイントまであと
+              <span className="text-lg">
+                {Number(1000 - child.total_points)}
+              </span>
+            </p>
+            <progress
+              className="progress progress-info w-56"
+              value={child.total_points}
+              max="1000"
+            ></progress>
+          </div>
+        </div>
       </div>
-      <progress
-        className="progress progress-info w-56"
-        value={child.total_points}
-        max="100"
-      ></progress>
       {selectedUser?.role === "parent" && (
         <>
-          <div className="mt-4">
+          <div className="mt-4 flex gap-3">
             <UpdateChildModal childId={child.id} />
             <button onClick={handleDeleteChild} className="btn btn-error">
               削除

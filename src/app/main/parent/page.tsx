@@ -8,7 +8,7 @@ export default function ParentPage() {
     <>
       <div className="mx-auto">
         <section className="mb-10">
-          <h2 className="text-xl font-bold mb-4">子ユーザー</h2>
+          <h2 className="text-center text-3xl mb-8">こどもユーザー</h2>
           <div className="mt-5">
             <AddChildModal />
           </div>
@@ -18,7 +18,7 @@ export default function ParentPage() {
         </section>
 
         <section className="mt-20">
-          <h2 className="text-lg font-bold mb-4">Todo一覧</h2>
+          <h2 className="text-center text-3xl mb-8">やること</h2>
           <div className="mt-5">
             <AddTodoModal />
           </div>

@@ -12,13 +12,13 @@ export default function ChildDetailPage() {
     <>
       <ChildInfo childId={child.id} />
 
-      <h3 className="text-lg font-semibold mt-6">やること！</h3>
+      <h2 className="text-center text-3xl mt-15 mb-8">やること！</h2>
       <TodoList child_id={child.id} status={"processing"} />
 
-      <h3 className="text-lg font-semibold mt-6">おすすめ</h3>
+      <h2 className="text-center text-3xl mt-15 mb-8">おすすめ</h2>
       <TodoList is_recommended={true} />
 
-      <h3 className="text-lg font-semibold mt-6">クリア</h3>
+      <h2 className="text-center text-3xl mt-15 mb-8">クリア</h2>
       <TodoList child_id={child.id} status={"completed"} />
     </>
   ) : (
