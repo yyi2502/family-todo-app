@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useRewardStore } from "@/stores/rewardStore";
 import { RewardPropsType, RewardType } from "@/types";
-import { Delete, Star, Trophy } from "lucide-react";
+import { Delete, Trophy } from "lucide-react";
 import { useRewardActions } from "@/hooks/useRewardActions";
 import ExchangeRewardModal from "./ExchangeRewardModal";
 import UpdateRewardModal from "./UpdateRewardModal";
