@@ -5,8 +5,8 @@ import { useUserStore } from "@/stores/userStore";
 import { ThumbsUp } from "lucide-react";
 import { RewardType } from "@/types";
 import { useChildActions } from "@/hooks/useChildActions";
-import { NameDisplay } from "../user/NameDisplay";
 import { runConfetti } from "@/utils/confetti/confetti";
+import { NameDisplay } from "@/utils/user/NameDisplay";
 
 type ExchangeRewardPropsType = {
   reward: RewardType;

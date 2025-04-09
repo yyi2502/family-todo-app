@@ -8,10 +8,12 @@ export default function TodoPage() {
   const selectedUser = useUserStore((state) => state.selectedUser);
   return (
     <>
-      <h2 className="text-center text-3xl mb-8">やることリスト</h2>
-      {selectedUser?.role === "parent" && <AddTodoModal />}
-      <div className="mt-4">
-        <TodoList />
+      <div className="max-w-3xl mx-auto p-6 mb-10">
+        <h2 className="text-center text-3xl mb-8">やることリスト</h2>
+        {selectedUser?.role === "parent" && <AddTodoModal />}
+        <div className="mt-4">
+          <TodoList />
+        </div>
       </div>
     </>
   );

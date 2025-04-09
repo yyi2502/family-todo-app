@@ -5,6 +5,7 @@ import { useChildActions } from "@/hooks/useChildActions";
 import { UserType } from "@/types";
 import { X } from "lucide-react";
 import UpdateChildModal from "./UpdateChildModal";
+import { getFirstChar } from "@/utils/user/NameDisplay copy";
 
 export default function ChildInfo({ childId }: { childId: string }) {
   const { deleteChild } = useChildActions();
@@ -24,10 +25,11 @@ export default function ChildInfo({ childId }: { childId: string }) {
       <div className="flex gap-3 items-center">
         <div className="avatar avatar-placeholder">
           <div className="bg-neutral text-neutral-content w-24 rounded-full">
-            <span className="text-3xl">{child.name}</span>
+            <span className="text-3xl">{getFirstChar(child.name)}</span>
           </div>
         </div>
         <div>
+          <p>{child.name}</p>
           <p>
             <span className="text-2xl">{child.total_points}</span>ポイント
           </p>

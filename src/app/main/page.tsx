@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 import useFetchUserData from "@/hooks/useFetchUserData";
 
+function getFirstChar(name?: string): string {
+  return name ? name.charAt(0) : "";
+}
+
 export default function Home() {
   const router = useRouter();
   const { parentData, childList, selectedUser, setSelectedUser } =
@@ -31,12 +35,12 @@ export default function Home() {
 
   // ローディング中は何も表示しない
   if (loading) {
-    return null; // loading.tsx によってローディング表示されるので、ここでは何も表示しない
+    return null;
   }
 
   return (
-    <div className="flex flex-col items-center">
-      <h2>つかうひと</h2>
+    <div className="max-w-3xl mx-auto p-6 mb-10">
+      <h2 className="text-center text-3xl mb-8">ユーザーきりかえ</h2>
       <div className="flex justify-center w-full mt-10 mb-4">
         <div className="indicator">
           {selectedUser?.role === "parent" && (
@@ -49,7 +53,7 @@ export default function Home() {
             onClick={handleParentClick}
           >
             <div className="bg-neutral text-neutral-content w-24 rounded-full">
-              <span className="text-3xl">{parentData?.name}</span>
+              <span className="text-3xl">{getFirstChar(parentData?.name)}</span>
             </div>
           </div>
         </div>
@@ -67,7 +71,7 @@ export default function Home() {
               onClick={() => handleChildClick(child.id)}
             >
               <div className="bg-info text-info-content w-24 rounded-full">
-                <span className="text-3xl">{child.name}</span>
+                <span className="text-3xl">{getFirstChar(child.name)}</span>
               </div>
             </div>
           </div>

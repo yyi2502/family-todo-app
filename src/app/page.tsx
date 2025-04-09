@@ -12,7 +12,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-white opacity-80"></div>
         <div className="hero-content text-center">
           <div className="max-w-md">
-            <h1 className="mb-5 text-5xl font-bold">おてつだいアプリ</h1>
+            <h1 className="mb-5 text-5xl font-bold">TODOチャレンジ</h1>
             <p className="mb-5">
               ファミリー向けのTODOを、楽しく管理できるアプリです。
               <br />

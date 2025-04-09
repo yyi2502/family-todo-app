@@ -10,16 +10,26 @@ export default function ChildDetailPage() {
   const child = childList.find((c) => c.id === id);
   return child ? (
     <>
-      <ChildInfo childId={child.id} />
+      <section className="max-w-3xl mx-auto p-5 mb-8">
+        <ChildInfo childId={child.id} />
+      </section>
 
-      <h2 className="text-center text-3xl mt-15 mb-8">やること！</h2>
-      <TodoList child_id={child.id} status={"processing"} />
+      <section className="max-w-3xl mx-auto p-6 mb-10">
+        <h2 className="text-center text-3xl mb-5">やること！</h2>
+        <TodoList child_id={child.id} status={"processing"} />
+      </section>
 
-      <h2 className="text-center text-3xl mt-15 mb-8">おすすめ</h2>
-      <TodoList is_recommended={true} />
+      <div className="bg-amber-100">
+        <section className="max-w-3xl mx-auto p-6 mb-10">
+          <h2 className="text-center text-3xl mb-8">おすすめ</h2>
+          <TodoList is_recommended={true} />
+        </section>
+      </div>
 
-      <h2 className="text-center text-3xl mt-15 mb-8">クリア</h2>
-      <TodoList child_id={child.id} status={"completed"} />
+      <section className="max-w-3xl mx-auto p-6 mb-10">
+        <h2 className="text-center text-3xl mb-8">クリア</h2>
+        <TodoList child_id={child.id} status={"completed"} />
+      </section>
     </>
   ) : (
     <div>ユーザーが見つかりません</div>

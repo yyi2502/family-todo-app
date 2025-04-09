@@ -9,7 +9,17 @@ export default function MainLayout({
   return (
     <>
       <Header />
-      <main className="mt-10 mb-40 max-w-2xl mx-auto p-2">{children}</main>
+      <div
+        className="w-full h-64 bg-no-repeat"
+        style={{
+          backgroundImage: "url('/main-bg-l.png'), url('/main-bg-r.png')",
+          backgroundPosition: "top left, top right",
+          backgroundRepeat: "no-repeat, no-repeat",
+          backgroundSize: "auto 12vw, auto 12vw",
+        }}
+      >
+        <main className="pt-10 mb-40 pb-40 max-w-2x mx-auto">{children}</main>
+      </div>
       <Dock />
     </>
   );
