@@ -1,6 +1,6 @@
-# Todo Challenge
+# TODO チャレンジ
 
-「Todo Challenge」は、こどもが楽しみながらタスクを管理できるToDoアプリです。  
+「TODO チャレンジ」は、こどもが楽しみながらタスクを管理できるToDoアプリです。  
 親子でタスクを共有し、やる気を引き出す仕組みを取り入れています。
 
 <img src="https://github.com/user-attachments/assets/1cbd5118-5a67-4681-8f36-c0fffdf95180" width="50%" />
